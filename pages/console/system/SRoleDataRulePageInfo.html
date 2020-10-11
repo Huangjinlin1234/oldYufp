@@ -1,45 +1,35 @@
-﻿<!--
-	@create by 
-	@update by 
-	@description 
--->
-<div>
-  <el-row>
-    <el-col :span="4">
-    	<el-input placeholder="输入角色名称进行过滤" v-model="roleName"> </el-input>
-        <el-tree 
-        		:style="autoStyle" 
-        		class="filter-tree"
-		        :data="role.roles"
-		        :props="role.props"
-		        default-expand-all
-		        :filter-node-method="filterRoleNode"
-		        :highlight-current="true"
-		        :expand-on-click-node="false"
-		        ref="roleTree"
-		        @node-click="nodeClickFn">
-		</el-tree>
-    </el-col>
-    <el-col :span="20">
-		<el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
-	 	<div class="yu-toolBar">
-		    <el-button-group>
-		      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
-		      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
-		      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
-		      <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">注销</el-button>
-		    </el-button-group>
-	   </div>
-	   <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
-	        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'" :default-load="false"></el-table-x>
-	        
-	   <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应width="650px" height="380px" -->
-	   <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="large">
-	     <el-form-x ref="reform"
-	           :group-fields="updateFields" :buttons="updateButtons"
-	           :disabled="formDisabled" label-width="150px"></el-form-x>
-	   </el-dialog-x>
-   </el-col>
-   
-  </el-row>
+﻿<div class="userCfg" style="background-color: transparent;">
+	<el-row :gutter="20">
+		<el-col :span="6" style="background-color: white">
+			<yu-tabs v-model="activeName" @tab-click="handleClick">
+				<yu-tab-pane label="角色授权" name="first" style="color:#2647a7; font-size: 14px;	font-weight: 500;"></yu-tab-pane>
+			</yu-tabs>
+			<yu-input v-show="!showXform" v-model="input" placeholder="请输入内容" :limit-char="limitChar" style="margin: 10px 0" icon="search"></yu-input>
+		</el-col>
+		<el-col :span="18">
+			<div class="user-title" style="background-color: white;padding: 0 10px">
+				<div class="right-content">
+					<el-row type="flex" style="padding: 8px 0">
+						<yu-button key="add" @click="handleClick">新增</yu-button>
+						<yu-button key="start" @click="handleClick">修改</yu-button>
+						<yu-button key="pause" @click="handleClick">删除</yu-button>
+						<yu-button key="delete" @click="handleClick">注销</yu-button>
+						<yu-input v-show="!showXform" v-model="input" placeholder="请输入内容" :limit-char="limitChar" style="margin: 0 10px"></yu-input>
+						<yu-button type="primary" @click="hightSearchFn">高级搜索
+							<i class="el-icon-arrow-down"></i>
+						</yu-button>
+					</el-row>
+				</div>
+			</div>
+			<div class="user-table" style="background-color: white;padding: 0 10px">
+				<yu-xform-q v-show="showXform" ref="reformq" :field-data="queryFields" :buttons="queryButtons" :columns="4"></yu-xform-q>
+				<div>
+				</div>
+				<yu-xtable-x ref="refTable" :data-url="dataUrl" request-type="POST" :table-columns="tableColumns">
+				</yu-xtable-x>
+			</div>
+		</el-col>
+
+	</el-row>
+
 </div>
