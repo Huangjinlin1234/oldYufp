@@ -1,0 +1,18 @@
+<!--
+     @create xzw
+     @description 检查登记审批查看页面
+     @createDate 2018-08-24
+-->
+<div>
+    <el-collapse ref='basecollapse' v-model="expandCollapseName">
+
+        <el-collapse-item title="检查登记申请信息" name="1">
+            <el-form-x ref="reform" :group-fields="updateFields" :disabled="formDisabled" label-width="150px"></el-form-x>
+        </el-collapse-item>
+
+        <el-collapse-item title="上传文件记录" name="2">
+            <el-button icon="document" @click="infoAnnexFn">查看</el-button>
+            <el-table-x ref="reftableAnnex" :base-params="baseParamsAnnex" :data-url="dataUrlAnnex" :table-columns="tableColumnsAnnex" :request-type="'POST'"></el-table-x>
+        </el-collapse-item>
+    </el-collapse>
+</div>

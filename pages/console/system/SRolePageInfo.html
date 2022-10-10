@@ -1,0 +1,50 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	<el-form-q ref="queryform" :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button> 
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+      <el-button icon="document" @click="viewSuerFn" v-if="checkPermission('viewSuer')">查看角色下用户</el-button>
+      <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">注销</el-button>
+      <!--<el-button icon="yx-bin" @click="setOrgFn" v-if="checkPermission('setOrg')">设置适用机构</el-button>-->
+     <!--  <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button> -->
+    </el-button-group>
+  </div>
+  
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'" ></el-table-x>
+        
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应 width="650px" height="380px" v-loading="updateLoading" element-loading-text="拼命加载中" -->
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="large">
+    <el-form-x ref="reform" :group-fields="updateFields" :buttons="updateButtons"
+           :disabled="formDisabled" label-width="80px"></el-form-x> 
+  </el-dialog-x>
+
+<!--查看角色下所有用户-->
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisibleView" size="full">
+    <el-table-x ref="viewReftable" :row-index="true" :radiobox="false" :base-params="baseParamsView"
+        :data-url="dataUrlView" :table-columns="tableColumnsView" :request-type="'POST'" ></el-table-x>
+      <div class="yu-grpButton">
+          <el-button icon="yx-undo2" @click="returnView" >返回</el-button>
+      </div>
+  </el-dialog-x>
+
+ <!-- <el-dialog :title="'设置适用机构'" :visible.sync="orgDialogVisible" width="500px">
+    <el-transfer style="margin-left: 3rem" v-model="setOrg" :data="orgData"
+                 :titles="['可分配机构','已分配机构']">
+    </el-transfer>
+    <br>
+    <div style="text-align: center;">
+      <el-button icon="edit" @click="sendRoleFn">确定</el-button>
+      <el-button icon="yx-undo2" @click="cancleSendRoleFn">取消</el-button>
+    </div>
+  </el-dialog>-->
+
+</div>
+

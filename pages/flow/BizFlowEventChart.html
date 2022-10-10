@@ -1,0 +1,101 @@
+<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div :style="{height: height + 'px'}" style="{overflow: hidden; max-width: 100%; min-width: 100%;}">
+    <div class="subheader editor-toolbar" id="editor-header">
+	    <div class="btn-group">
+	        <div class="btn-toolbar pull-left">
+	            <button v-for="(item, index) in toolBarItems"
+	                    :id="item.id"
+	                    :title="item.title"
+	                    class="btn btn-inverse" v-bind:class="{'separator': item.type == 'separator'}"
+	                    :disabled="item.type == 'separator' || item.enabled == false"
+	                    @click="toolbarButtonClicked(index)">
+	                <i v-if="item.type == 'button'" v-bind:class="item.cssClass" class="toolbar-button" data-toggle="tooltip" :title="item.title"></i>
+	                <div v-if="item.type == 'separator'" v-bind:class="item.cssClass"></div>
+	            </button>
+	          </div>
+	        </div>
+	  </div>
+	  <div class="full">
+	     <div class="row row-no-gutter">
+	        <div id="paletteHelpWrapper" class="col-xs-3">
+                <div class="stencils" id="paletteSection" :style="{height: height + 'px'}">
+                     <div v-for="stage in stageList">
+                        <ul v-if="stage.nodeList.length > 0" class="stencil-group" :class="{collapsed: !stage.expanded}">
+                            <li class="ng-scope">
+	                            <span v-on:click="stage.expanded = !stage.expanded">
+							        <i class="glyphicon"
+							           :class="{'glyphicon-chevron-right': !stage.expanded, 'glyphicon-chevron-down': stage.expanded}"></i>
+							        {{ stage.bizStageName }}
+							    </span>
+							    <ul class="stencil-group stencil-group-non-root" :class="{collapsed: !stage.expanded}">
+								    <li v-for="item in stage.nodeList" 
+	                                     class="stencil-item"
+	                                     :id="item.bizNodeId"
+	                                     :title="item.bizNodeName"
+	                                     data-drag="true"
+	                                     v-jq-draggable="nodeDraggableOptions">
+	                                    <img v-if="!item.userTask.customIcon" :src="'./libs/editor/stencilsets/bpmn2.0/icons/' + item.userTask.icon" width="16px;" height="16px;"/>
+	                                    <img v-if="item.userTask.customIcon" v-bind:src="'/app/rest/image/' + item.userTask.icon" width="16px;" height="16px;"/>
+	                                    {{ item.bizNodeName }}
+	                                </li>
+								</ul>
+							</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+	        <div id="canvasHelpWrapper" class="col-xs-9">
+	            <div id="canvasSection" class="canvas-wrapper" :style="{height: height + 'px'}"
+	                    v-jq-droppable="droppableOptions">
+	                    <div class="canvas-message" id="model-modified-date"></div>
+	                    <div class="Oryx_button" 
+	                         id="delete-button" 
+	                         :title="deleteTitle"
+	                         @click="deleteShapeFn"
+	                         data-drag="true"
+	                         style="display:none">
+	                        <img src="libs/editor/images/delete.png"/>
+	                    </div>
+	                    <!-- <div class="Oryx_button" 
+	                         id="morph-button"
+	                         :title="morphTitle"
+	                         @click="morphShapeFn"
+	                         style="display:none">
+	                        <img src="libs/editor/images/wrench.png"/> -->
+	                    </div>
+	                    <div class="Oryx_button"
+	                         v-for="item in quickMenuItems"
+	                         v-if="item.id != 'UserTask'"
+	                         :id="item.id"
+	                         :title="item.description"
+	                         @click="quickAddItem(item.id)"
+	                         ref="draggedElement"
+	                         data-drag="true"
+	                         v-jq-draggable="draggableOptions"
+	                         style="display:none">
+	                         <img :src="'libs/editor/stencilsets/bpmn2.0/icons/' + item.icon"/>
+	                     </div>
+	            </div>
+	        </div>
+	        <div id="propertiesHelpWrapper" class="col-xs-9">
+	        </div>
+	   </div>
+	</div>
+	
+	<div>
+	   <el-dialog-x title="事件节点信息" :visible.sync="nodeDialogVisible" width="980px">
+	       <el-form-x ref="nodeReform"
+	           :group-fields="nodeUpdateFields" :buttons="nodeUpdateButtons" label-width="160px"></el-form-x>
+	  </el-dialog-x>
+	</div>
+	<div>
+       <el-dialog-x title="事件路由信息" :visible.sync="routeDialogVisible" width="680px">
+           <el-form-x ref="routeReform"
+               :group-fields="routeUpdateFields" :buttons="routeUpdateButtons" label-width="160px"></el-form-x>
+      </el-dialog-x>
+    </div>
+</div>

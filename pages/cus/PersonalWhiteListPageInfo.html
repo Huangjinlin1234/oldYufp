@@ -1,0 +1,170 @@
+<!--
+	@create by
+	@update by
+	@description
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="" @click="deleteFn" >批量删除</el-button>
+            <el-button icon="" @click="setDtFn" >有效时间设置</el-button>
+
+            <el-button icon="" @click="impAndUpdateFn" >导入更新文件</el-button>
+            <el-button icon="" @click="impAndDeleteFn" >导入删除文件</el-button>
+
+            <el-button icon="" @click="downUpFn" >下载导入模板</el-button>
+            <el-button icon="" @click="downlDelFn" >下载删除模板</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :checkbox="true" :base-params="baseParams"
+                :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+
+    <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应  width="650px" height="380px" -->
+    <el-dialog-x :title="viewType[viewType]" :visible.sync="dialogVisible" width="30%">
+        <el-form-x ref="reform"
+                   :group-fields="updateFields" :buttons="updateButtons"
+                   :disabled="formDisabled"></el-form-x>
+    </el-dialog-x>
+
+    <el-dialog-x title="导入更新信息" :visible.sync="importDialogVisible" width="70%" v-loading="loadingUp" element-loading-text="上传中">
+    <el-row type="flex" :gutter="20">
+
+        <el-col :span="30">
+            <div class="grid-content bg-purple">
+                <div class="el-table el-table--fit el-table--striped el-table--border el-table--enable-row-hover el-table--enable-row-transition">
+                    <div class="el-table__header-wrapper">
+                        <table class="el-table el-table__header">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>文件名</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(file, index) in files" :key="file.id">
+                                <td>{{index + 1}}</td>
+                                <td>
+                                    <div class="filename">
+                                        {{file.name}}
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+                    <el-button-group>
+                        <file-upload
+                                ref="upload"
+                                class="el-button"
+                                :post-action="uploadUrl"
+                                :extensions="extensions"
+                                :data="fileData"
+                                :headers="headers"
+                                v-model="files"
+                                accept="application/vnd.ms-excel,application/x-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                @input-filter="inputFilter"
+                                @input-file="inputFile">
+                            <i class="fa fa-plus"></i>
+                            选择文件
+                        </file-upload>
+                        <el-button style="padding-left: 10px" icon="yx-file-excel" @click="commitFileFn">保存</el-button>
+                        <el-button style="padding-left: 10px" icon="yx-undo2" @click="cancelFn">取消</el-button>
+                    </el-button-group>
+                </div>
+            </div>
+        </el-col>
+    </el-row>
+</el-dialog-x>
+
+    <el-dialog-x title="导入删除信息" :visible.sync="importDialogVisible1" width="70%" v-loading="loadingDel" element-loading-text="上传中">
+        <el-row type="flex" :gutter="20">
+
+            <el-col :span="30">
+                <div class="grid-content bg-purple">
+                    <div class="el-table el-table--fit el-table--striped el-table--border el-table--enable-row-hover el-table--enable-row-transition">
+                        <div class="el-table__header-wrapper">
+                            <table class="el-table el-table__header">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>文件名</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(file, index) in files" :key="file.id">
+                                    <td>{{index + 1}}</td>
+                                    <td>
+                                        <div class="filename">
+                                            {{file.name}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+                        <el-button-group>
+                            <file-upload
+                                    ref="delete"
+                                    class="el-button"
+                                    :post-action="uploadDelUrl"
+                                    :extensions="extensions"
+                                    :data="fileData"
+                                    :headers="headers"
+                                    v-model="files"
+                                    accept="application/vnd.ms-excel,application/x-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                    @input-filter="inputFilterDel"
+                                    @input-file="inputFileDel">
+                                <i class="fa fa-plus"></i>
+                                选择文件
+                            </file-upload>
+                            <el-button style="padding-left: 10px" icon="yx-file-excel" @click="commitFileDelFn">保存</el-button>
+                            <el-button style="padding-left: 10px" icon="yx-undo2" @click="cancelDelFn">取消</el-button>
+                        </el-button-group>
+                    </div>
+                </div>
+            </el-col>
+        </el-row>
+    </el-dialog-x>
+    <el-dialog-x title="错误信息" :visible.sync="tipsVisible" width="50%" height="80%">
+        <div class="el-table el-table--fit el-table--striped el-table--border el-table--enable-row-hover el-table--enable-row-transition"
+             style="overflow-y: scroll;max-height: 500px">
+            <div class="el-table__header-wrapper">
+                <table class="el-table el-table__header">
+                    <thead>
+                    <tr>
+                        <th style="width: 100px">序号</th>
+                        <th>错误信息</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(error, index) in errors" :key="error.id">
+                        <td>{{index + 1}}</td>
+                        <td>
+                            <div class="errorname">
+                                {{errors[index]}}
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+            <el-button-group>
+                <el-button class="coverfn-btn" style="padding-left: 10px" icon="yx-file-excel" @click="handleFn('cover')"
+                           v-if="flag!='ExcelError' && flag === 'DataDuplicateError'">覆盖
+                </el-button>
+                <el-button class="excludefn-btn" style="padding-left: 10px" icon="yx-file-excel" @click="handleFn('exclude')"
+                           v-if="flag!='ExcelError' && flag === 'DataDuplicateError'">剔除
+                </el-button>
+                <el-button class="cancelfn-btn" style="padding-left: 10px" icon="yx-undo2" @click="cancelErrFn">取消
+                </el-button>
+            </el-button-group>
+        </div>
+    </el-dialog-x>
+</div>

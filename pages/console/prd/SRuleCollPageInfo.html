@@ -1,0 +1,93 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	<el-form-q :field-data="sRuleCollQueryFields" :buttons="sRuleCollQueryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+      <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button>
+      <el-button icon="yx-bin" @click="disableFn">失效</el-button>
+      <el-button icon="yx-copy" @click="copyFn" v-if="checkPermission('create')">复制规则集</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="sRuleCollTable" :row-index="true" :radiobox="false" :base-params="sRuleCollParams"
+        :data-url="ruleCollsUrl" :table-columns="sRuleCollColumns" :request-type="'POST'"></el-table-x>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <el-dialog :title="viewTitle[viewType]" :visible.sync="dialogVisible" width="70%" height="70%" size="full">
+    <el-form-x ref="sRuleCollForm"
+           :group-fields="sRuleCollField" :buttons="sRuleCollUpdateButtons"
+           :disabled="formDisabled" label-width="120px"></el-form-x>
+    <div v-if="dtlVisible">
+      <el-button-group>
+		      <el-button icon="plus" @click="addRules" v-if="checkPermission('create')&&isDisplay()" id="addRuleButton">新增</el-button>
+		      <el-button icon="edit" @click=modifyRuleParams v-if="checkPermission('edit')&&isDisplay()">参数配置修改</el-button>
+	      <el-button icon="document" @click="viewDetail" v-if="checkPermission('detail')">查看</el-button>
+		      <el-button icon="yx-bin" @click="deleteRuleCfg" v-if="checkPermission('delete')&&isDisplay()">删除</el-button>
+      </el-button-group>
+	    <el-table-x ref="sRuleCollDtlTable" :row-index="true" :radiobox="false" :base-params="sRuleCollDtlParams"
+	        :data-url="ruleCollDtlsUrl" :table-columns="sRuleCollDtlColumns" :request-type="'POST'" :default-load="false"  max-height="500" ></el-table-x>
+	     
+    </div>  
+  </el-dialog>
+  
+    <el-dialog title="新增规则" :visible.sync="srcDialogVisible" width="800px" height="600px" size="full">
+       
+         <el-form-q :field-data="sRuleSrcQueryFields" :buttons="sRuleSrcQueryButtons"></el-form-q>
+         <el-button icon="plus" @click="selectRtn" v-if="checkPermission('create')">选取返回</el-button>
+          <el-button icon="edit" @click="rtn" v-if="checkPermission('edit')">返回</el-button>
+          <el-table-x ref="sRuleSrcTable" :row-index="true" :checkbox="true" :base-params="sRuleSrcParams" 
+              :data-url="ruleSrcsUrl" :table-columns="sRuleSrcColumns" :request-type="'POST'" :default-load="false" ></el-table-x>
+    </el-dialog>
+    
+    <el-dialog-x title="规则参数信息" :visible.sync="paramDialogVisible" width="600px" height="300px">
+    
+        <el-form-x ref="sRuleCollDtlParamForm" :group-fields="sRuleCollDtlField" :disabled="sRuleCollDtlFormDisabled" label-width="80px"></el-form-x>
+         
+         
+         <div>
+            <el-table ref="sRuleCollDtlParamTable" :data="mainGrid.data" v-loading="mainGrid.loading" @row-click="rowClickFn"
+			             :max-height="height" stripe border fit highlight-current-row >
+			        <el-table-column label="参数ID" >
+			            <template scope="scope">
+			                <span >{{ scope.row.paramId }}</span>
+			            </template>
+			        </el-table-column>
+			        <el-table-column label="参数名称" >
+			            <template scope="scope">
+			                <span>{{ scope.row.ruleName }}</span>
+			            </template>
+			        </el-table-column>
+			        <el-table-column label="参数值" >
+			            <template scope="scope">
+			                 <el-input v-show="scope.row.edit" size="small" v-model="scope.row.paramVal"></el-input>
+			                <span v-show="!scope.row.edit">{{ scope.row.paramVal}}</span>
+			            </template>
+			        </el-table-column>
+			    </el-table>
+         </div>
+         <div height="50px"></div>
+          <!-- <el-table-x ref="sRuleCollDtlParamTable" :row-index="true" :radiobox="false" :base-params="sRuleDtlParams" 
+              data-url="/api/s/rule/coll/dtl/param/dtl" :table-columns="sRuleSrcParamColumns" :request-type="'POST'" pageabled="true"></el-table-x> -->
+          <div align="center">  
+	          <el-button icon="plus" @click="saveParam" v-if="checkPermission('create')&&isParamDisplay()">保存</el-button>
+	          <el-button icon="edit" @click="rtnParam" v-if="checkPermission('edit')">返回</el-button>       
+          </div>         
+    </el-dialog-x>
+
+    <el-dialog title="复制规则集"  :visible.sync="copyDiaVis">
+
+        <el-form-x ref="copyRuleCollForm" :group-fields="copyRuleCollField" 
+            label-width="125px"></el-form-x>
+
+        <div style="text-align: center">  
+            <el-button icon="yx-cloud-check" @click="saveCopyRuleColl" :loading="copyLoading" >保存</el-button>
+            <el-button icon="yx-undo2" @click="copyDiaVis = false">返回</el-button>       
+        </div> 
+    </el-dialog>
+</div>

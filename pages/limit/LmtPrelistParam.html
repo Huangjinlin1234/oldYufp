@@ -1,0 +1,171 @@
+<!--
+  @create by 
+  @update by 
+  @description 
+-->
+<div>
+  <el-form-q  v-if="queryReset"  :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="prelistColumns" :request-type="'POST'"></el-table-x>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full" >
+  <el-tabs type="border-card" v-model="tabName" :buttons="fromButtons" > 
+     <el-tab-pane label="白名单预授信信息" name="prelist">
+        <!--  <el-form-x ref="baseInfo" :group-fields="baseFields"  :disabled="formDisabled"  label-width="80px"></el-form-x> -->
+             <el-form-x ref="reform1"
+           :group-fields="prelistFields" :buttons="fromButtons"
+           :disabled="formDisabled" label-width="110px">
+           </el-form-x>          
+          <div class="yu-grpButton" v-if="!formDisabled">
+        </div>
+        </el-tab-pane>
+               <el-tab-pane label="客户额度信息" name="prdCont">
+              <el-form-x ref="reform2"
+           :group-fields="prdContFields" :buttons="fromButtons"
+           :disabled="formDisabled" label-width="110px">
+           </el-form-x>          
+ </el-tab-pane>
+         <el-tab-pane label="合同列表信息" name="ctrCont">
+                   <el-button-group>
+              <el-button type="primary" icon="document" @click="ctrContInfoFn" >查看</el-button>
+          </el-button-group>
+                 <el-table-x ref="ctrContTable" :row-index="true" :radiobox="false" :base-params="baseParams"
+                       :data-url=dataUrlCtrCont :table-columns="ctrContColumns" :default-load="false"  :request-type="'POST'" >
+                       </el-table-x>
+          </el-tab-pane>
+                   <el-tab-pane label="冻结记录列表" name="frozee">
+                                      <el-button-group>
+              <el-button type="primary" icon="document" @click="freezeInfoFn" >查看</el-button>
+          </el-button-group>
+                 <el-table-x ref="frezeeTable" :row-index="true" :radiobox="false" :base-params="baseParams"
+                       :data-url=dataUrlFrozee :table-columns="frozeeColumns" :default-load="false"  :request-type="'POST'" ></el-table-x>
+          </el-tab-pane>
+     
+              <el-tab-pane label="解冻记录列表" name="unFrozee">
+                                 <el-button-group>
+              <el-button type="primary" icon="document" @click="unfreezeInfoFn" >查看</el-button>
+          </el-button-group>
+                 <el-table-x ref="unfreezeTable" :row-index="true" :radiobox="false" :base-params="baseParams"
+                       :data-url=dataUrlUnfrozee :table-columns="unFrozeeColumns" :default-load="false"  :request-type="'POST'" ></el-table-x>   
+          </el-tab-pane>
+    </el-tabs>
+  </el-dialog-x>
+  <el-dialog title="合同信息详情" :visible.sync="contDialogVisible" size="full" >
+    <div style="padding: 10px;">
+      <el-card style="width: 100%;" shadow="always" header="合同基本信息" :body-style="{ padding: '0px' }">
+        <div >
+          <el-form-x ref="ctrForm" :group-fields="ctrFields" label-width="80px" >
+          </el-form-x>
+        </div>
+      </el-card>
+    </div>
+    <div style="padding: 10px;">
+      <el-card style="width: 100%;" shadow="always" header="合同担保信息"  :body-style="{ padding: '0px' }">
+        <div >
+          <el-form-x ref="form1" :group-fields="fields1" label-width="80px" >
+          </el-form-x>
+        </div>
+      </el-card>
+    </div>
+
+    <div style="padding: 10px;">
+      <el-card style="width: 100%;" shadow="always" header=""  :body-style="{ padding: '0px' }">
+        <div >
+          <el-form-x ref="form2" :group-fields="fields2" label-width="80px" >
+          </el-form-x>
+        </div>
+      </el-card>
+    </div>
+
+    <div style="padding: 10px;">
+      <el-card style="width: 100%;" shadow="always" header=""  :body-style="{ padding: '0px' }">
+        <div >
+          <el-form-x ref="form3" :group-fields="fields3" label-width="80px" >
+          </el-form-x>
+        </div>
+      </el-card>
+    </div>
+
+    <div style="padding: 10px;">
+      <el-card style="width: 100%;" shadow="always" header=""  :body-style="{ padding: '0px' }">
+        <div >
+          <el-form-x ref="form4" :group-fields="fields4" label-width="80px" >
+          </el-form-x>
+        </div>
+      </el-card>
+    </div>
+
+    <div style="padding: 10px;">
+      <el-card style="width: 100%;" shadow="always" header=""  :body-style="{ padding: '0px' }">
+        <div >
+          <el-form-x ref="form5" :group-fields="fields5" label-width="80px" >
+          </el-form-x>
+        </div>
+      </el-card>
+    </div>
+
+    <div style="padding: 10px;">
+      <el-card style="width: 100%;" shadow="always" header=""  :body-style="{ padding: '0px' }">
+        <div >
+          <el-form-x ref="form6" :group-fields="fields6" label-width="80px" >
+          </el-form-x>
+        </div>
+      </el-card>
+    </div>
+
+    <div style="text-align: center;">
+        <el-button-group>
+            <el-button type="primary" icon="yx-undo2" @click="contCloseFn" >关闭</el-button>
+        </el-button-group>
+    </div>
+
+  </el-dialog>
+  <!-- 额度冻结记录 -->
+  <el-dialog title="额度冻结记录详情" :visible.sync="freezeVisibale" size="full">
+    <el-collapse v-model="freezeCollapse">
+        <el-collapse-item title="申请基本信息" name="freezeBase">
+            <el-form-x ref="freezeBase" :group-fields="freezeBaseFields" label-width="125px" :disabled="true">
+            </el-form-x>
+        </el-collapse-item>
+        <el-collapse-item title="审批信息" name="freezeAprv">
+            <el-form-x ref="freezeAprv" :group-fields="freezeAprvFields" label-width="125px" :disabled="true">
+            </el-form-x>
+        </el-collapse-item>
+    </el-collapse>
+    <div style="text-align: center;">
+        <el-button-group>
+            <el-button type="primary" icon="yx-undo2" @click="freezeCloseFn" >关闭</el-button>
+        </el-button-group>
+    </div>
+  </el-dialog>
+  <!-- 额度解冻记录 -->
+  <el-dialog title="额度解冻记录详情" :visible.sync="unfreezeVisibale" size="full">
+      <el-collapse v-model="unfreezeCollapse">
+        <el-collapse-item title="额度解冻申请基本信息" name="unFreBase">
+            <el-form-x ref="unFreBase" :group-fields="unFreBaseFields" label-width="125px" :disabled="true">
+            </el-form-x>
+        </el-collapse-item>
+        <el-collapse-item title="解冻金额与原因" name="unAmtAndReason">
+            <el-form-x ref="unAmtAndReason" :group-fields="unAmtAndReasonFields" label-width="80px" :disabled="true">
+            </el-form-x>
+        </el-collapse-item>
+        <el-collapse-item title="审批信息" name="unfreAprv">
+            <el-form-x ref="unfreAprv" :group-fields="unfreAprvFields" label-width="125px" :disabled="true">
+            </el-form-x>
+        </el-collapse-item>
+      </el-collapse>
+      <div style="text-align: center;">
+        <el-button-group>
+            <el-button type="primary" icon="yx-undo2" @click="unfreezeCloseFn" >关闭</el-button>
+        </el-button-group>
+      </div>
+  </el-dialog>
+  
+  
+</div>

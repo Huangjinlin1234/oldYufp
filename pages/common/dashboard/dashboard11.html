@@ -1,0 +1,45 @@
+<div id="fx_dashboard">
+    <!--mainContainer sta-->
+    <div class="yu-mainContainer" style="padding-left: 10px;padding-right: 10px">
+       <!--  <div class="yu-Con" style="width: 60%;">
+            <div class="yu-box">
+                <el-badge :value="daiNum"
+                          style="margin-left:10px;margin-top: 10px;margin-right: 40px;padding-right: 20px;">
+                    <div style="font-size: 20px;font-weight: bold;font-style: normal;color: #666;">待办事项</div>
+                </el-badge>
+                <div class="yu-content yu-tabBox" style="display: block;">
+                    <el-table-x ref="reftable" :row-index="true" @row-click="rowClickFn"
+                                :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"
+                                :pageable="false" @loaded="loadFn" :async="true"></el-table-x>
+                </div>
+            </div>
+        </div> -->
+
+
+        <div class="yu-Con" style="float: right;">
+            <div class="yu-box">
+                <el-badge
+                          style="margin-left:10px;margin-top: 10px;margin-right: 40px;padding-right: 20px;">
+                <div style="font-size: 20px;font-weight: bold;font-style: normal;color: #666;">公告展示</div>
+                </el-badge>
+                <div class="yu-content yu-tabBox" style="display: block;">
+                    <marquee style="height:30rem;" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="2"
+                             direction="up">
+
+                        <a style="font-size: 14px;margin: 10px 10px 20px;color: #000" href="javascript:void(0);" @click="astFn(item)"
+                           v-for="(item, index) in asts" >{{index+1}}   {{item.title}}  ( {{item.senddate}}  {{item.userName}} )
+                            <br/></a>
+
+                    </marquee>
+                </div>
+
+            </div>
+        </div>
+        <el-dialog :title="'查看详情'" :visible.sync="dialogVisible" size="small" top="5%" >
+            <el-form-x ref="reform"
+                       :group-fields="updateFields" :buttons="updateButtons"
+                       :disabled="formDisabled" label-width="90px"></el-form-x>
+        </el-dialog>
+    </div>
+    <!--mainContainer end-->
+</div>

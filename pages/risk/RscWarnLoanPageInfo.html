@@ -1,0 +1,70 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons" ref="form"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+            <!--<el-button icon="document" @click="realtimequeryFn" v-if="checkPermission('realtimequery')">预警查询</el-button>-->
+            <el-button icon="export" @click="exportFn" v-if="checkPermission('export')">导出</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :base-params="baseParams"
+                :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+    <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+       width="650px" height="380px" -->
+    <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+        <el-tabs type="border-card" v-model="tabName" :buttons="updateButtons">
+            <el-tab-pane label="风险预警信息" name="riskTab">
+                <el-collapse v-model="expandCollapseName" ref='basecollapse'>
+                    <el-collapse-item title="风险预警信息" name="warningInfoSecond">
+                        <el-table-x ref="warningInfotable" :row-index="true" :radiobox="false" :base-params="warningInfoParams"
+                                    :data-url="dataUrlwarningInfo" :table-columns="warningInfotableColumns" :request-type="'POST'"></el-table-x>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-tab-pane>
+
+            <el-tab-pane label="人行征信">
+                <div style="padding-top: 10px"></div>
+                <el-table-x ref="cdpReftable" :row-index="true" :radiobox="false" :base-params="cdpReftableParams" :row-style="rowClass" :stripe="false"
+                            :data-url="dataUrlcomm" :table-columns="cdpReftableColumns" :request-type="'POST'"></el-table-x>
+                <el-button type="primary" @click="getNewestCredit" icon="check">查看最新征信报告</el-button>
+                <el-button type="primary" @click="getHistoryCredit" icon="check">查看历史征信报告</el-button>
+            </el-tab-pane>
+
+            <el-tab-pane label="行内信息">
+                <div style="padding-top: 10px"></div>
+                <el-table-x ref="hanlinReftable" :row-index="true" :radiobox="false" :base-params="hanLinReftableParams" :row-style="rowClass" :stripe="false"
+                            :data-url="dataUrlcomm" :table-columns="hanLinReftableColumns" :request-type="'POST'"></el-table-x>
+            </el-tab-pane>
+
+            <el-tab-pane label="外部数据">
+                <div style="padding-top: 10px"></div>
+                <el-table-x ref="externalReftable" :row-index="true" :radiobox="false" :base-params="externalReftableParams" :row-style="rowClass" :stripe="false"
+                            :data-url="dataUrlcomm" :table-columns="externalReftableColumns" :request-type="'POST'"></el-table-x>
+            </el-tab-pane>
+
+        </el-tabs>
+        <el-form-x :buttons="updateButtons"></el-form-x>
+    </el-dialog-x>
+    <el-dialog-x title="查询最新信息" :visible.sync="newInfoDialogVisible" size="full">
+        <el-card style="width: 100%;" shadow="always" :body-style="{ padding: '10px' }">
+            <el-form-x ref="newInfoForm" :group-fields="queryNewInfoFields"></el-form-x>
+            <el-button type="primary" @click="searchFn" icon="search">查询</el-button>
+            <el-button type="primary" @click="resetFn" icon="check">重置</el-button>
+            <div style="height: 24px"></div>
+            <el-table-x ref="newInfotable" :row-index="true" :radiobox="false" :base-params="newInfotableParams"
+                        :default-load="false"
+                        :data-url="dataUrlnewInfo" :table-columns="newInfotableColumns"
+                        :request-type="'POST'"></el-table-x>
+
+        </el-card>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="closeFn" icon="check">返回</el-button>
+        </div>
+    </el-dialog-x>
+
+</div>

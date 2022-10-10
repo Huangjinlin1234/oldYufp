@@ -1,0 +1,50 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Java class files
+*.class
+*.cache
+*.log
+*.lock
+*.bak
+*.epoch
+.classpath
+.project
+# generated files
+target/
+gen/
+bin/
+.settings/
+
+# idea ignore
+.idea/
+*.ipr
+*.iml
+*.iws
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+##ignore this file##
+/target/ 
+.classpath
+.project
+.settings
+.externalToolBuilders/

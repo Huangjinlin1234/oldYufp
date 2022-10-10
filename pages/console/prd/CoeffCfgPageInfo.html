@@ -1,0 +1,52 @@
+<!--
+    @create by szbd
+    @description 提额系数配置表的前端页面
+    @createDate 2018-09-17 15:10:09
+-->
+<div>
+
+<el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('update')" >系数调整</el-button><!-- v-if="checkPermission('update')" -->
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+
+	<el-dialog-x  :visible.sync="dialogVisible" size="full">
+	<h3>系数参数调整</h3>
+ 	<el-table ref="addReftable" :data="mainGrid.data" v-loading="mainGrid.loading">
+ 	
+ 		<el-table-column label="单位注册类型">
+ 			<template scope="scope">
+ 				<span>{{paramType[scope.row.typeId]}}</span>
+ 			</template>
+ 		</el-table-column>
+ 		
+ 		<el-table-column label="当前/调整前系数">
+ 			<template scope="scope">
+ 				<span v-show= "!scope.row.edit">{{scope.row.coefficient}}</span>
+ 			</template>
+ 		</el-table-column>
+ 		
+ 		<el-table-column label="调整后系数">
+ 			<template scope="scope">
+ 			 	<el-input size="small" v-model="scope.row.newCoefficient"></el-input>
+ 			</template>
+ 		</el-table-column>
+ 		
+ 	</el-table>
+ 	
+ 	<br/>
+	 <div slot="footer" class="dialog-footer">
+	 	<el-form ref="commitFrom">
+	 	<el-form-item>
+                <el-button disable = "false" type="primary" icon="check" @click="commitFn">提交</el-button>
+                <el-button disable = "false" type="primary" icon="yx-undo2" @click="dialogVisible = false">返回</el-button>
+            </el-form-item>
+	 </el-form>
+	 </div>
+ 	
+ 	</el-dialog-x>
+</div>

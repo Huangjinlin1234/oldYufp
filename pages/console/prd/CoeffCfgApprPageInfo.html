@@ -1,0 +1,31 @@
+<!--
+    @create by szbd
+    @description 提额系数配置审批的前端页面
+    @createDate 2018-09-17 15:10:09
+-->
+<div>
+	<h3>系数参数调整</h3>
+	
+ 	<el-table ref="reftable" :data="mainGrid.data" v-loading="mainGrid.loading">
+ 	
+ 		<el-table-column label="单位注册类型">
+ 			<template scope="scope">
+ 				<span>{{paramType[scope.row.typeId]}}</span>
+ 			</template>
+ 		</el-table-column>
+ 		
+ 		<el-table-column label="调整前系数">
+ 			<template scope="scope">
+ 				<span v-show= "!scope.row.edit">{{scope.row.coefficient}}</span>
+ 			</template>
+ 		</el-table-column>
+ 		
+ 		<el-table-column label="调整后系数">
+ 			<template scope="scope">
+ 			 	<span v-show= "!scope.row.edit">{{scope.row.newCoefficient}}</el-input>
+ 			</template>
+ 		</el-table-column>
+ 		
+ 	</el-table>
+ 	
+</div>

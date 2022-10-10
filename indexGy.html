@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>网络信贷系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1">
+    <style>
+        html,body{width:100%;height: 100%;background-color:white;margin:0px;padding: 0px;overflow: hidden;}#_rootDiv{ width:100%;height:100%;margin: 0px;padding: 0px;overflow: hidden;}#_rootDiv > div{width:100%;height:100%;margin: 0px;padding: 0px;overflow: hidden;}
+    </style>
+</head>
+    <body>
+        <div id="_rootDiv"></div>
+    </body>
+    <!-- 基础库-->
+    <!--[if lte IE 9]>
+    <script type="text/javascript" src="libs/console/console.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="libs/polyfill/es6-promise.auto.js"></script>
+    <script type="text/javascript" src="libs/yufp/yufp-1.0.0.js"></script>
+    <script type="text/javascript" src="custom/main.js"></script>
+
+    <script type="text/javascript">
+        window.onload = function(){
+            var url = window.location.href;
+            if (url.indexOf("code")<0){
+                yufp.service.request({
+                    url: backend.uaaService+'/api/gy/ahref',
+                    method: 'POST',
+                    data: {clientId:'1'},
+                    callback: function (code, message, response) {
+                        if(response && response.code == 0) {
+                            window.location.replace(response.rows);
+                        } else {
+                        }
+                    }
+                });
+                return;
+            }else{
+                var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+                var uuid = [], i;
+                for (i = 0; i < 16; i++) uuid[i] = chars[0 | Math.random()*16];
+                var clientId = uuid.join('');
+                var headers = {
+                    "Content-Type": "application/json; charset=UTF-8",
+                    //"Content-Type": "application/application/x-www-form-urlencoded; charset=UTF-8",
+                    "Authorization": "Basic d2ViX2FwcDo="
+                };
+                var reg = new RegExp("(^|&)" + "code" + "=([^&]*)(&|$)","i");
+                var code = url.match(reg);
+                var data = {
+                    imageCode : code[2],
+                    clientId : clientId
+                };
+                yufp.service.request({
+                    needToken: false,
+                    url: backend.uaaService+'/api/oauth/token/gy',
+                    method: 'POST',
+                    headers: headers,
+                    data: data,
+                    callback: function (code, message, response) {
+                        if (response && response.code == 0 && response.rows != '') {
+                            var token = response && response.rows;
+                            yufp.service.putToken(token);
+                            yufp.session.loadUserSession(function () {
+                                yufp.router.to("frameTop");
+                            });
+                        }else {
+
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+    <!-- <script type="text/javascript" src="libs/tinymce/tinymce.min.js"></script> -->
+</html>

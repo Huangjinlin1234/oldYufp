@@ -1,0 +1,262 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	<el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+
+  <div class="yu-toolBar">
+    <el-button-group>
+
+      <el-button icon="plus" @click="addFn" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="分案处理中..."
+                 v-if="checkPermission('divCase')">分案</el-button>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">分配查看</el-button>
+    </el-button-group>
+  </div>
+
+  <el-table-x ref="reftable" :row-index="true" :base-params="baseParams"
+         :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应 width="650px" height="380px" -->
+    <!--分案机构版本号展示-->
+    <el-dialog-x title="分案机构" :visible.sync="distriRateVisible" size="full">
+        <el-form-q :field-data="queryOrgVerFields" :buttons="queryOrgVerButtons"></el-form-q>
+        <el-row :gutter="10">
+            <el-col :span="12">
+                <div class="yu-toolBar">
+                    <h2>版本号</h2>
+                </div>
+                <el-table-x ref="refRatetable" :row-index="true" :radiobox="true" :base-params="ratebaseParams" @row-click="searchdataRateDelFn"
+                            :data-url="dataRateUrl" :table-columns="tableRateColumns" :request-type="'POST'"></el-table-x>
+            </el-col>
+            <el-col :span="12">
+                <div class="yu-toolBar">
+                    <h2>详情列表</h2>
+                </div>
+                <el-table-x ref="refRateDettable" :data-url="dataRateDelUrl" :default-load="false" :table-columns="tableDetColumns"
+                            :request-type="'POST'" :base-params="ratebaseDetParams"></el-table-x>
+            </el-col>
+        </el-row>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="divisionFn" icon="check">确定</el-button>
+            <el-button type="primary" @click="cancelVerNoFn" icon="yx-undo2">取消</el-button>
+        </div>
+    </el-dialog-x>
+
+    <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" width="650px">
+    <el-form-x ref="reform"
+           :group-fields="updateFields" :buttons="updateButtons"
+           :disabled="formDisabled" label-width="80px"></el-form-x>
+    </el-dialog-x>
+
+    <!-- 分配查看页面  -->
+    <el-dialog-x title="委外机构分配查看页面" :visible.sync="dialogVisibleFp" size="full">
+        <el-form-q :field-data="queryFieldsFp" :buttons="queryButtonsFp"></el-form-q>
+
+        <div class="yu-toolBar">
+            <el-button-group>
+                <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button>
+                <el-button icon="edit" @click="acceptFn" v-if="checkPermission('accept')">受理</el-button>
+            </el-button-group>
+        </div>
+
+        <el-table-x ref="reftableFp" :row-index="true" :base-params="baseParamsFp"
+                    :data-url="dataUrlFp" :table-columns="tableColumnsFp" :request-type="'POST'"></el-table-x>
+
+        <!--<el-table-x ref="reftableExp" :table-columns="tableColumnsSl" ></el-table-x>-->
+
+        <el-form-x :buttons="rebackMainButtons"></el-form-x>
+    </el-dialog-x>
+
+    <!-- 委外机构受理页面  -->
+    <el-dialog-x title="委外机构受理页面" :visible.sync="dialogVisibleSl" size="full">
+        <el-form-q :field-data="queryFieldsSl" :buttons="queryButtonsSl"></el-form-q>
+
+        <div class="yu-toolBar">
+            <el-button-group>
+                <el-button icon="document" @click="infoSlFn" v-if="checkPermission('detailSL')">查看</el-button>
+                <el-button icon="edit" @click="flowFn" v-if="checkPermission('taskflow')">人工流转</el-button>
+                <el-button icon="edit" @click="delayFn('delayCase')" v-if="checkPermission('delay')">延案</el-button>
+                <el-button icon="edit" @click="importFn" v-if="checkPermission('import')">导入催收结果</el-button>
+                <el-button icon="edit" @click="settleFn" v-if="checkPermission('settle')">结案</el-button>
+                <el-button icon="yx-undo2" @click="withdrawFn" v-if="checkPermission('withdraw')">撤回</el-button>
+            </el-button-group>
+        </div>
+
+        <el-table-x ref="reftableSl" :row-index="true" :base-params="baseParamsSl"
+                    :data-url="dataUrlSl" :table-columns="tableColumnsSl" :request-type="'POST'"></el-table-x>
+
+        <el-form-x :buttons="rebackFpButtons"></el-form-x>
+    </el-dialog-x>
+
+    <!-- 受理—查看页面 -->
+    <el-dialog-x title="催收任务详细信息" :visible.sync="dialogTrdVisible" size="full">
+        <el-tabs type="border-card">
+            <el-card style="width: 100%;" shadow="always" header="客户基本信息" v-show="checkIsShowCus"
+                     :body-style="{ padding: '0px' }">
+                <el-form-x ref="cusBaseInfo" :group-fields="cusBaseInfoFields" :disabled="formDisabled"
+                           label-width="130px" style="padding: 12px 12px 0px 12px">
+                </el-form-x>
+            </el-card>
+            <div style="height: 24px"></div>
+            <el-card style="width: 100%;" shadow="always" header="催收借据信息" v-show="checkIsShowCollReceipt"
+                     :body-style="{ padding: '0px' }">
+                <el-form-x ref="collReceiptInfo" :group-fields="collReceiptInfoFields" :disabled="formDisabled"
+                           :buttons="collReceiptButtons" label-width="130px" style="padding: 12px 12px 24px 12px">
+                </el-form-x>
+            </el-card>
+            <div style="height: 24px"></div>
+            <el-card style="width: 100%;" shadow="always" header="历史催收记录" v-show="checkIsShowHisColl"
+                     :body-style="{ padding: '0px' }">
+                <el-table-x ref="hisCollTable" :row-index="true" :base-params="hisCollParams" :data-url="dataUrlhisColl" :table-columns="hisCollColumns"
+                            :request-type="'POST'" style="padding: 12px 12px 0px 12px"></el-table-x>
+            </el-card>
+            <el-card style="width: 100%;" shadow="always" header="历史催收登记记录" v-show="isShowHisCollDetail"
+                     :body-style="{ padding: '0px' }">
+                <el-table-x ref="hisCollDetailTable" :row-index="true" :base-params="hisCollDetailParams" :data-url="dataUrlhisColl"
+                            :table-columns="hisCollDetailColumns" :request-type="'POST'" style="padding: 12px 12px 0px 12px"></el-table-x>
+            </el-card>
+            <div style="height: 24px"></div>
+            <el-card style="width: 100%;" shadow="always" header="流转信息" v-show="checkIsShowFlow"
+                     :body-style="{ padding: '0px' }">
+                <el-table-x ref="flowTable" :row-index="true" :base-params="flowParams" :data-url="dataUrlflow" :table-columns="flowColumns"
+                            :request-type="'POST'" style="padding: 12px 12px 0px 12px" v-show="checkIsShowFlowTable"></el-table-x>
+                <el-form-x ref="flowInfo" :group-fields="flowInfoFields" :buttons="flowInfoButtons" label-width="130px"
+                           style="padding: 12px 12px 24px 12px" v-show="checkIsShowFlowForm">
+                </el-form-x>
+            </el-card>
+            <!--人工流转 end-->
+
+            <!--结案 start-->
+            <el-card style="width: 100%;" shadow="always" header="委外催收登记信息" v-show="checkIsShowLitiColl" :body-style="{ padding: '0px' }">
+                <el-form-x ref="settleCollInfo" :group-fields="settleCollInfoFields" :disabled="formDisabled" :buttons="settleCollInfoButtons"
+                           label-width="130px" style="padding: 12px 12px 0px 12px">
+                </el-form-x>
+                <div style="height: 24px"></div>
+            </el-card>
+            <div style="height: 24px"></div>
+            <el-card style="width: 100%;" shadow="always" header="附件上传" v-show="checkIsShowUpload"
+                     :body-style="{ padding: '10px' }">
+                <div style="height: 12px"></div>
+                <div class="yu-toolBar">
+                    <el-button-group>
+                        <el-button icon="plus" @click="uploadAnnexFn">上传</el-button>
+                        <el-button icon="document" @click="infoAnnexFn">查看</el-button>
+                    </el-button-group>
+                </div>
+                <el-table-x ref="reftableAnnex"  :base-params="baseParamsAnnex"
+                            :data-url="dataUrlAnnex" :table-columns="tableColumnsAnnex" :request-type="'POST'" >
+                </el-table-x>
+            </el-card>
+            <!--结案 end-->
+
+            <!--延期信息 start-->
+            <el-card style="width: 100%;" shadow="always" header="延期信息" v-show="checkIsShowDelay"
+                     :body-style="{ padding: '0px' }">
+                <el-table-x ref="delayTable" :row-index="true" :base-params="delayParams" :data-url="dataUrlDelay" :table-columns="delayColumns"
+                            :request-type="'POST'" style="padding: 12px 12px 0px 12px" v-show="checkIsShowDelayTable"></el-table-x>
+            </el-card>
+            <div style="height: 24px"></div><!--延期信息 end-->
+
+            <el-form-x :buttons="rebackTrdButtons"></el-form-x>
+        </el-tabs>
+    </el-dialog-x>
+
+    <!-- 催收借据详情页面-->
+    <el-dialog-x title="借据详细信息" :visible.sync="dialogAccLaonVisible" size="full">
+        <el-form-x ref="accLaonInfo" :group-fields="accLaonFields" :disabled="true" label-width="130px"
+                   :buttons="accLaonButtons"></el-form-x>
+    </el-dialog-x>
+
+    <!-- 导入催收结果页面 -->
+    <el-dialog-x title="导入催收结果" :visible.sync="dialogImportVisible" size="full">
+
+        <div class="yu-toolBar">
+            <el-button-group>
+                <el-button icon="yx-file-excel" @click="downloadFn">模板下载</el-button>
+                <el-button icon="edit" @click="importExcelFn">按模板导入</el-button>
+                <el-button icon="plus" @click="singleCreateFn">单笔新增</el-button>
+                <!-- <el-button icon="yx-bin" @click="colltResDeleteFn">删除</el-button> 与杨星确认，此删除按钮是否是，当导入数据的时候，可能操作员需要核实一下数据，
+                可能需求将多余的或错误的数据删除 @date 2019/09/12 -->
+            </el-button-group>
+        </div>
+
+        <el-table-x ref="collRsTable" :row-index="true" :base-params="colltResParams" :default-load="false"
+                    :data-url="dataUrlColltRes" :table-columns="colltResColumns" :request-type="'POST'"></el-table-x>
+        <el-form-x :buttons="closeImportButtons"></el-form-x>
+    </el-dialog-x>
+
+    <!--单笔新增 start-->
+    <el-dialog-x title="单笔新增" :visible.sync="dialogSingleVisible">
+        <el-form-x ref="singleInfo" :group-fields="singleFields" :buttons="singleButtons" label-width="130px">
+        </el-form-x>
+    </el-dialog-x>
+    <!--单笔新增 end-->
+
+    <el-dialog-x title="按模板导入" :visible.sync="dialogImportExcelVisible" size="600px"  v-loading="loading2" element-loading-text="上传中">
+        <div style="text-align: center;">
+            <el-input style="width: 80%;padding-top: 20px" placeholder="上传文件名..." :value="fileExcelName" :disabled="true"></el-input>
+        </div>
+
+        <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+            <el-button-group>
+                <file-upload
+                        ref="upload"
+                        class="el-button"
+                        :post-action="uploadUrl"
+                        :extensions="extensions"
+                        :data="fileData"
+                        :headers="headers"
+                        v-model="files"
+                        accept="application/vnd.ms-excel,application/x-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        @input-filter="inputFilter"
+                        @input-file="inputFile"
+                        style="border-radius: 4px;background-color: #20a0ff;"
+                        type="primary">
+                    <i class="fa fa-plus"></i>
+                    <span style="color: #FFFFFF">选择文件</span>
+                </file-upload>
+                <el-button-group style="padding-left: 5px">
+                    <el-button style="border-radius: 4px;" type="primary" icon="upload" @click="commitFileFn">保存</el-button>
+                </el-button-group>
+                <el-button-group style="padding-left: 5px">
+                    <el-button style="border-radius: 4px;" type="primary" icon="yx-undo2" @click="cancelFn">取消</el-button>
+                </el-button-group>
+            </el-button-group>
+        </div>
+    </el-dialog-x>
+
+    <!-- 导入结果展示和确认 -->
+    <el-dialog-x title="导入结果展示和确认" :visible.sync="dialogTempVisible" size="full" :before-close="concancelFn">
+        <div class="yu-toolBar">
+            <el-button icon="yx-bin" @click="tempDeleteFn">删除</el-button>
+        </div>
+        <div style="height: 10px"></div>
+        <el-table-x ref="collRsTempTable" :row-index="true" :checkbox="true" :base-params="collRsTempParams"
+                    :data-url="dataUrlcollRsTemp" :table-columns="collRsTempColumns" :request-type="'POST'"></el-table-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="confirmDataFn" icon="check">保存</el-button>
+            <el-button type="primary" @click="concancelFn" icon="yx-undo2">取消</el-button>
+        </div>
+    </el-dialog-x>
+
+    <el-dialog-x title="延案申请" :visible.sync="delayAppDialogVisible" size="full" :before-close="cancelOutsFn">
+        <div>
+            <div id="outsTaskDistrMain"></div>
+        </div>
+        <el-form-x :buttons="rebackForthButtons"></el-form-x>
+    </el-dialog-x>
+
+    <el-dialog-x title="附件" :visible.sync="dialogVisibleAnnex" size="large">
+        <el-form-x ref="annexForm" :group-fields="annexInfoFields" :disabled="annexFormDisabled"
+                   label-width="130px" style="padding: 12px 12px 24px 12px">
+        </el-form-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="saveAnnexFn" icon="check" v-if="flag != 'VIEWINFO'">保存</el-button>
+            <el-button type="primary" @click="cancleAnnesFn" icon="yx-undo2" v-if="flag != 'VIEWINFO'">取消</el-button>
+            <el-button type="primary" @click="cancleAnnesFn" icon="check" v-if="flag == 'VIEWINFO'">返回</el-button>
+        </div>
+    </el-dialog-x>
+
+</div>

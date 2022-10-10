@@ -1,0 +1,66 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+            <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+            <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+            <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams" :data-url="unfrzAppDataUrl" :table-columns="tableColumns"
+        :request-type="'POST'"></el-table-x>
+    <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+    <el-dialog-x title="解冻申请" :visible.sync="dialogVisible" size="full">
+        <el-tabs type="border-card" @tab-click="tabClick" v-model="tabName">
+            <el-tab-pane label="额度解冻申请" name="first">
+                <el-collapse v-model="expandCollapseName">
+                    <el-collapse-item title="授信协议选择" name="lmtContInfo" v-show="viewType != 'DETAIL'">
+                        <el-form-q :field-data="lmtQueryFields" @search-click="searchFn"></el-form-q>
+                        <el-table-x ref="lmtTable" :data-url="lmtDataUrl" @row-click="rowClickFn" :table-columns="lmtTableColumns" :default-load="false"
+                            :max-height="300" request-type="POST">
+                        </el-table-x>
+                    </el-collapse-item>
+                    <el-collapse-item title="额度解冻申请基本信息" name="baseInfo">
+                        <el-form-x ref="baseInfoform" :group-fields="baseInfoFields" label-width="125px" :disabled="formDisabled">
+                        </el-form-x>
+                    </el-collapse-item>
+                    <el-collapse-item title="解冻金额与原因" name="amtAndReason">
+                        <el-form-x ref="amtAndReasonForm" :group-fields="amtAndReasonFields" label-width="80px" :disabled="formDisabled">
+                        </el-form-x>
+                    </el-collapse-item>
+                    <el-collapse-item title="借据明细列表" name="loanDetail">
+                        <el-table-x ref="loanDetailTable" :row-index="true" :base-params="loanDetailParams" :default-load="false" :data-url="loanDetailUrl"
+                            :table-columns="loanDetailColumns" :request-type="'POST'">
+                        </el-table-x>
+                    </el-collapse-item>
+                    <el-collapse-item title="审批信息" name="aprvInfo" v-show="aprvVisible">
+                        <el-form-x ref="aprvForm" :group-fields="aprvFields" label-width="125px" :disabled="true">
+                        </el-form-x>
+                    </el-collapse-item>
+                </el-collapse>
+                <div class="yu-grpButton">
+                    <el-button type="primary" icon="yx-checkmark" @click="saveFn" v-if="viewType != 'DETAIL'">保存</el-button>
+                    <el-button type="primary" icon="yx-checkmark" @click="commitFn" v-if="viewType != 'DETAIL'">提交</el-button>
+                    <el-button type="primary" icon="yx-undo2" @click="returnFn">返回</el-button>
+                </div>
+            </el-tab-pane>
+            <!-- <el-tab-pane label="征信" name="zx">
+                <el-table-x ref="thirdReftable" :row-index="true" :radiobox="false"
+                    :data-url="dataUrlZX" :table-columns="tableColumnsZX" :default-load="false" request-type="POST" ></el-table-x>
+                <el-button type="primary" @click="getCredit" icon="check">查看征信报告</el-button>
+            </el-tab-pane> -->
+            <el-tab-pane label="风险提示" name="second">
+                <el-table-x ref="passTable" :row-index="true" :base-params="passBaseParams" :default-load="false" :data-url="passUrl" :table-columns="passColumns"
+                    :request-type="'POST'">
+                </el-table-x>
+            </el-tab-pane>
+        </el-tabs>
+    </el-dialog-x>
+</div>

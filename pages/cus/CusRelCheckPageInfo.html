@@ -1,0 +1,128 @@
+<!--
+  @create by qiuyf 2018-12-24
+  @update by 
+  @description 关联人管理页面
+-->
+<div>
+  <el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  
+  <div class="yu-toolBar">
+    <el-button-group>
+        <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+        <el-button icon="yx-file-excel" @click="downloadFn" v-if="checkPermission('download')">模板下载</el-button>
+        <el-button icon="edit" @click="importFn" v-if="checkPermission('import')">导入</el-button>
+        <el-button icon="delete" @click="deleteFn" v-if="checkPermission('delete')">批量注销</el-button>
+    </el-button-group>
+  </div>
+</div>
+  
+  <el-table-x ref="reftable" :row-index="true" :checkbox="true" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+  
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应   :title="viewTitle[viewType]"   -->
+  <el-dialog-x :visible.sync="dialogVisible" title="关联人详细信息" size="large">
+		<el-form-x ref="reform" :group-fields="updateFields" :buttons="updateButtons" :disabled="formDisabled" ></el-form-x>
+  </el-dialog-x>
+  
+  <el-dialog-x title="导入关联人信息" :visible.sync="importDialogVisible" width="70%" v-loading="loading2" element-loading-text="上传中" >
+      <el-row type="flex" :gutter="20">
+          <el-col :span="5">
+              <div class="grid-content bg-purple">
+                  <el-card class="box-card">
+                      <div slot="header" class="clearfix">
+                          <span style="line-height: 8px;">导入规则</span>
+                      </div>
+                      <div>
+                        <span>
+                          <!--<font color="#ff0000">-->
+                            <ul>
+                              <li>1.导入的文件支持“.xls”，“.xlsx”。</li>
+                              <li>2.导入的Excel文件里，证件ID不可重复。</li>
+                              <li>3.客户已存在，跳过该条数据。</li>
+                              <li>4.在导入过程中报错，则此次导入作废，需重新导入。</li>
+                              <li>5.单次导入数据建议不超过10000条。</li>
+                            </ul>
+                          <!--</font>-->
+                        </span>
+                      </div>
+                  </el-card>
+              </div>
+          </el-col>
+          <el-col :span="16">
+              <div class="grid-content bg-purple">
+                  <div class="el-table el-table--fit el-table--striped el-table--border el-table--enable-row-hover el-table--enable-row-transition">
+                      <div class="el-table__header-wrapper">
+                          <table class="el-table el-table__header">
+                              <thead>
+                              <tr>
+                                  <th>序号</th>
+                                  <th>文件名</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <tr v-for="(file, index) in files" :key="file.id">
+                                  <td>{{index + 1}}</td>
+                                  <td>
+                                      <div class="filename">
+                                          {{file.name}}
+                                      </div>
+                                  </td>
+                              </tr>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+                  <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+                      <el-button-group>
+                          <file-upload ref="upload" class="el-button" :post-action="uploadUrl" :extensions="extensions" :data="fileData" :headers="headers" v-model="files"
+                                       accept="application/vnd.ms-excel,application/x-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                       @input-filter="inputFilter"  @input-file="inputFile">
+                              <i class="fa fa-plus"></i>
+                              选择文件
+                          </file-upload>
+                          <el-button style="padding-left: 10px" icon="check"  @click="commitFileFn">保存</el-button>
+                          <el-button style="padding-left: 10px" icon="yx-undo2"  @click="cancelFn">取消</el-button>
+                      </el-button-group>
+                  </div>
+              </div>
+          </el-col>
+      </el-row>
+  </el-dialog-x>
+<el-dialog-x title="错误信息" :visible.sync="tipsVisible" width="50%" height="80%">
+    <div class="el-table el-table--fit el-table--striped el-table--border el-table--enable-row-hover el-table--enable-row-transition"
+         style="overflow-y: scroll;max-height: 500px">
+        <div class="el-table__header-wrapper">
+            <table class="el-table el-table__header">
+                <thead>
+                <tr>
+                    <th style="width: 100px">序号</th>
+                    <th>错误信息</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(error, index) in errors" :key="error.id">
+                    <td>{{index + 1}}</td>
+                    <td>
+                        <div class="errorname">
+                            {{errors[index]}}
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+        <el-button-group>
+            <el-button class="coverfn-btn" style="padding-left: 10px" icon="yx-file-excel" @click="handleFn('cover')"
+                       v-if="flag!='ExcelError' && flag === 'DataDuplicateError'">覆盖
+            </el-button>
+            <el-button class="excludefn-btn" style="padding-left: 10px" icon="yx-file-excel" @click="handleFn('exclude')"
+                       v-if="flag!='ExcelError' && flag === 'DataDuplicateError'">剔除
+            </el-button>
+            <el-button class="cancelfn-btn" style="padding-left: 10px" icon="yx-undo2" @click="cancelFn">确定
+            </el-button>
+        </el-button-group>
+    </div>
+</el-dialog-x>
+</div>

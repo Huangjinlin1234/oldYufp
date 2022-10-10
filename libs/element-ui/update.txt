@@ -1,0 +1,4 @@
+1.修改array2tree方法，加入hasOwnProperty判断，由于当扩展了Array.property时,for(var i in data)该写法是危险的，会把数据所有属性都循环出来
+1.情景：使用浏览器:IE9 ， el-dialog 嵌套 el-form-x ， el-form-x的group-fields 中有select类型 。 第一次打开对话框，选择select的值后，关闭对话框，然后重新打开，点击select的选择框会弹到v-modal层就是遮罩层下面。
+        测试发现可以在 name: "ElSelectDropdown" 的updatePopper方法中增加更新z-index的方法修复 。
+        updatePopper: function () {this.popperJS ? (this.popperJS.update(),this.popperJS._popper.style.zIndex = r.PopupManager.nextZIndex()): this.createPopper()}

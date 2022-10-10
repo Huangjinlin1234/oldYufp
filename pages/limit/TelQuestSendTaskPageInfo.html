@@ -1,0 +1,38 @@
+<!--
+    @create by szbd
+    @description 发送呼叫中心电核任务的前端页面
+    @createDate 2018-08-02 16:00:46
+-->
+<div>
+  <el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  
+  <div class="yu-toolBar">
+    <el-button-group>
+     <!--  <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button> -->
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+      <!-- <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button> -->
+       <el-button icon="edit" @click="sendTaskFn">发送电核</el-button>
+    <!--   <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button> -->
+    </el-button-group>
+  </div>
+  
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+        
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应 width="650px" height="380px" -->
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+	 <!--  <el-form-x ref="reform"
+	     :group-fields="updateFields" :buttons="updateButtons"
+	     :disabled="formDisabled" label-width="80px">
+	  </el-form-x> -->
+	     
+	  <el-table-x ref="reform" :row-index="true" :radiobox="false" :base-params="baseParams"
+	                :data-url="dataUrlDH" :table-columns="tableColumnDH"  :pageable="false"></el-table-x>
+  </el-dialog-x>
+  
+	     
+</div>
+
+
+

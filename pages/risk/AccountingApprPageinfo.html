@@ -1,0 +1,23 @@
+<div>
+    <!--<el-table-x ref="reftable" :row-index="true" :default-load="false" data-params="baseParam"-->
+    <!--:data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>-->
+
+
+
+    <el-collapse ref='basecollapse' v-model="expandCollapseName">
+        <el-collapse-item title="核销借据清单" name="1">
+            <el-table-x ref="reftable" :base-params="baseParam" :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+        </el-collapse-item>
+
+        <el-collapse-item title="核销原因" name="2">
+            <el-form-x ref="reform" :group-fields="updateFields" label-width="125px" :disabled="formDisabled">
+            </el-form-x>
+        </el-collapse-item>
+
+        <el-collapse-item title="上传文件记录" name="3">
+            <el-button icon="document" @click="infoAnnexFn">查看</el-button>
+            <el-table-x ref="reftableAnnex" :base-params="baseParamsAnnex" :data-url="dataUrlAnnex" :table-columns="tableColumnsAnnex" :request-type="'POST'"></el-table-x>
+        </el-collapse-item>
+    </el-collapse>
+
+</div>

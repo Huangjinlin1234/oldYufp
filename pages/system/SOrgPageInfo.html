@@ -1,0 +1,33 @@
+<div class="userCfg">
+  <div class="user-title">
+    <b>机构管理</b> 
+    <div class="right-content">
+      <el-row type="flex">
+        <yu-button key="add" @click="handleClick">新增</yu-button>
+        <yu-button key="start" @click="handleClick">启用</yu-button>
+        <yu-button key="pause" @click="handleClick">停用</yu-button>
+        <yu-button key="delete" @click="handleClick">删除</yu-button>
+        <yu-button key="import" @click="handleClick">导入</yu-button>
+        <yu-button key="export" @click="handleClick">导出</yu-button>
+        <yu-button key="resetPwd" @click="handleClick">重置密码</yu-button>
+        <yu-input  v-show="!showXform" v-model="input" placeholder="请输入内容" :limit-char="limitChar"></yu-input>
+        <yu-input  v-show="!showXform" v-model="input" placeholder="请输入内容" :limit-char="limitChar"></yu-input>
+        <yu-button key="resetPwd" type="text" @click="hightSearchFn">高级搜索<i class="el-icon-arrow-down"></i></yu-button>
+      </el-row>
+    
+      </div>
+
+    </div>
+    <div class="user-table">
+        <yu-xform-q v-show="showXform" ref="reformq" :field-data="queryFields" :buttons="queryButtons" :columns="4"></yu-xform-q>
+        <div>
+            
+        </div>
+        <yu-xtable-x
+            ref="refTable"
+            :data-url="dataUrl" 
+            request-type="POST"
+            :table-columns="tableColumns">
+        </yu-xtable-x>
+    </div>
+</div>

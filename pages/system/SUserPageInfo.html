@@ -1,0 +1,28 @@
+<div class="userCfg">
+    <div class="user-title">
+        <b>用户管理</b> 
+        <div>
+            <yu-button key="add" @click="handleClick">新增</yu-button>
+            <yu-button key="start" @click="handleClick">启用</yu-button>
+            <yu-button key="pause" @click="handleClick">停用</yu-button>
+            <yu-button key="delete" @click="handleClick">删除</yu-button>
+            <yu-button key="import" @click="handleClick">导入</yu-button>
+            <yu-button key="export" @click="handleClick">导出</yu-button>
+            <yu-button key="resetPwd" @click="handleClick">重置密码</yu-button>
+            <yu-button key="resetPwd" type="text" @click="handleClick">高级搜索</yu-button>
+        </div>
+
+    </div>
+    <div class="user-table">
+        <yu-xform-q ref="reformq" :field-data="queryFields" :buttons="queryButtons" :columns="4"></yu-xform-q>
+        <div>
+            
+        </div>
+        <yu-xtable-x
+            ref="refTable"
+            :data-url="dataUrl" 
+            request-type="POST"
+            :table-columns="tableColumns">
+        </yu-xtable-x>
+    </div>
+</div>

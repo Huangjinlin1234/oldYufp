@@ -1,0 +1,7 @@
+<div>
+    <div style="margin: 10px"><span style="font-size: larger;font-weight: bolder;margin-right: 10px">技术服务费总额 </span><input v-model="totalServiceFee" disabled style="padding:5px;border-radius: 1px"/></div>
+    <el-table-x :row-index="true" :radiobox="false" ref="previewRef"
+                :table-data="previewData" @loaded="loaded"
+                :table-columns="previewTableColumns" :default-load="false" :data-url="prevUrl"
+                :request-type="'GET'" :max-height="500" :disabled="true"></el-table-x>
+</div>

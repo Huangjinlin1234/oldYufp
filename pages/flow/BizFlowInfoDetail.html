@@ -1,0 +1,35 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+    <el-tabs v-model="tabName">
+        <el-tab-pane label="业务流转基础配置" name="baseCfg">
+            <el-row >
+	            <el-col :span= "5" >
+	                <el-tree-x ref="cfgTree" :height="height - 20" @node-click="nodeClickFn"
+	                       :data-url="treeDataUrl" data-id="nodeId" data-label="nodeName" :data-params="treeParam" :root-visible="true"
+	                       data-pid="parentNodeId" :data-root="dataRoot" style="margin:10px 10px 0 0;">
+	                </el-tree-x>
+	            </el-col>
+	            <el-col :span="19" >
+	                 <div id="cfgInfo"></div>
+	            </el-col>
+	        </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="业务流转事件配置" name="eventCfg">
+             <el-row>
+                   <el-col :span= "5" >
+                       <el-tree-x ref="eventCfgTree" :height="height - 20" @node-click="eventNodeClickFn"
+                              :data-url="eventTreeDataUrl" data-id="nodeId" data-label="nodeName" :data-params="eventTreeParam" :root-visible="true"
+                              data-pid="parentNodeId" :data-root="dataRoot" style="margin:10px 10px 0 0;">
+                       </el-tree-x>
+                   </el-col>
+                   <el-col :span="19" >
+                        <div id="eventCfgInfo"></div>
+                   </el-col>
+               </el-row>
+        </el-tab-pane>
+    </el-tabs>
+</div>

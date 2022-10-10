@@ -1,0 +1,25 @@
+<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	 <!-- 借据页面层  :disabled="billformDisabled"
+         <div class="yu-toolBar" >
+                  <el-button icon="document" @click="billinfoFn" >查看</el-button>
+        </div>-->
+        <el-table-x ref="billtable" :row-index="true"   :radiobox="false"  :base-params="baseParams"
+                    :data-url="billUrl" :table-columns="billgstableColumns" :request-type="'POST'"></el-table-x>
+         <el-form-x ref="billform"   :group-fields="billupdateFields"  :disabled="true" label-width="130px"></el-form-x>     
+  
+    <!-- 借据页面新增 :disabled="billaddformDisabled"  -->
+     <el-dialog-x :title="viewTitle[viewType]" :visible.sync="billadddialogVisible" size="full">
+      <el-table-x ref="billaddtable" :row-index="true"  :base-params="baseParams"
+                                   :data-url="billaddUrl" :table-columns="billaddtableColumns" :request-type="'POST'"></el-table-x>
+       <el-form-x ref="billaddform"   :group-fields="billaddupdateFields"  :disabled="true" label-width="120px"></el-form-x>     
+             <div class="yu-grpButton">
+                      <el-button icon="yx-undo2" type="primary"  @click="billaddReturn">关闭</el-button>
+            </div>
+                            
+      </el-dialog-x>
+</div>

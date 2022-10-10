@@ -1,0 +1,70 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	<el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+      <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button>
+      <!-- <el-button icon="yx-redo2" @click="enableFn" >生效</el-button> -->
+      <el-button icon="yx-undo2" @click="disableFn" >失效</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <el-dialog :title="viewTitle[viewType]" :visible.sync="dialogVisible"  :size="sizeViw"  v-if="dialogVisible" >
+    <el-form-x ref="reform"
+            v-loading="updateLoading"  element-loading-text="拼命加载中"
+           :group-fields="updateFields" :buttons="updateButtons"
+           :disabled="formDisabled" label-width="100px"></el-form-x>
+           
+           <el-collapse v-show="linkedVisible" v-model="expandCollapseName">
+			        <el-collapse-item title="关联岗位授权明细信息" name="base">
+				             <el-button-group v-show="grantVisible">
+								      <el-button icon="plus" @click="addLinkFn">新增</el-button>
+								      <el-button icon="edit" @click="modifyLinkFn" >修改</el-button>
+								      <el-button icon="yx-bin" @click="deleteLinkFn">删除</el-button>
+								    </el-button-group>
+							      <el-table-x ref="linkedtable" :row-index="true" :radiobox="false"
+							         :default-load="false" request-type="POST"
+                      :data-url="linkedDataUrl" :table-columns="contTempInfo.tableColumns" ></el-table-x>
+			        </el-collapse-item>
+			        
+			         <el-collapse-item title="关联用户授权明细信息" name="base">
+                     <el-button-group v-show="grantVisible">
+                      <el-button icon="plus" @click="childAddLinkFn">新增</el-button>
+                      <el-button icon="edit" @click="childModifyLinkFn" >修改</el-button>
+                      <el-button icon="yx-bin" @click="childDeleteLinkFn">删除</el-button>
+                    </el-button-group>
+                    <el-table-x ref="childLinkedtable" :row-index="true" :radiobox="false"
+                       :default-load="false" request-type="POST"
+                      :data-url="childLinkedDataUrl" :table-columns="grantInfo.tableColumns" ></el-table-x>
+              </el-collapse-item>
+			    </el-collapse>
+           
+  </el-dialog>
+  <!-- 新增关联岗位授权明细 -->
+  <el-dialog :title="viewTitle[linkViewType]" :visible.sync="addLinkVisible"  width="1150px">
+         <el-form-x ref="linkedForm"
+            v-loading="contTempInfo.updateLoading"  
+           :group-fields="contTempInfo.updateFields" :buttons="contTempInfo.updateButtons"
+           label-width="120px"></el-form-x>
+           
+  </el-dialog>
+  
+   <!-- 新增关联用户授权明细 -->
+  <el-dialog :title="viewTitle[linkViewType]" :visible.sync="childAddLinkVisible"  width="1150px">
+         <el-form-x ref="childLinkedForm"
+            v-loading="grantInfo.updateLoading"  element-loading-text="拼命加载中"
+           :group-fields="grantInfo.updateFields" :buttons="grantInfo.updateButtons"
+           label-width="120px"></el-form-x>
+           
+  </el-dialog>
+</div>

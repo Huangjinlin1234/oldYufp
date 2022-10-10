@@ -1,0 +1,67 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 角色对应资源操作信息
+-->
+<div>
+  <el-row>
+    <el-col :span="7">
+      
+      <el-input
+        placeholder="输入角色名称进行过滤"
+        v-model="roleName">
+      </el-input>
+
+      <el-tree
+        :style="autoStyle"
+        class="filter-tree"
+        v-loading="role.loading"
+        :data="role.roles"
+        :props="role.props"
+        default-expand-all
+        :filter-node-method="filterRoleNode"
+        :highlight-current="true"
+        :expand-on-click-node="false"
+        ref="roleTree"
+        @node-click="roleNodeClick">
+      </el-tree>
+
+    </el-col>
+    <el-col :span="10">
+
+      <el-input
+        placeholder="输入资源中文描述进行过滤"
+        v-model="rescDesc">
+      </el-input>
+
+      <el-tree
+        :style="autoStyle"
+        class="filter-tree"
+        v-loading="resc.loading"
+        :data="resc.roles"
+        :props="resc.props"
+        default-expand-all
+        :filter-node-method="filterRescNode"
+        :highlight-current="true"
+        :expand-on-click-node="false"
+        ref="rescTree"
+        @node-click="rescNodeClick">
+      </el-tree>
+
+    </el-col>
+    <el-col :span="7">
+      <el-checkbox-group v-model="roleRescRules" 
+        style="margin-top: 36px;margin-left: 5px;">
+        <el-checkbox v-for="rescAct in rescActs" 
+        :label="rescAct.rescActCode" 
+        :key="rescAct.rescActCode">
+          {{rescAct.rescActDesc}}
+        </el-checkbox>
+      </el-checkbox-group>
+      <div style="margin-top: 36px;margin-left: 5px;text-align: center;">
+        <el-button type="primary" 
+          @click="saveRoleRescRule"  v-if="checkPermission('create')">保存</el-button>
+      </div>
+    </el-col>
+  </el-row>
+</div>

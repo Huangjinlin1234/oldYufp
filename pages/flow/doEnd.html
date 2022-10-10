@@ -1,0 +1,30 @@
+<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+    <el-form-q ref="queryform" :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+     <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="document" @click="open" v-if="checkPermission('detail')">查看</el-button>
+    </el-button-group>
+  </div>
+   <el-table-x ref="reftable" :row-index="true" :radiobox="false"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'" :formDisabled="formDisabled"></el-table-x>
+	<el-dialog  title="查看办结事项"  :visible.sync="visible" size="full">
+	
+	      <el-collapse v-model="activeName">
+            <el-collapse-item v-for="(pagePlugin, index) in vos" :name="pagePlugin.bizPluginId">
+                <template slot="title">
+                    {{pagePlugin.taskName}}
+                </template>
+                <div :id="pagePlugin.bizPluginId"></div>
+            </el-collapse-item>
+        </el-collapse>
+        
+		<div style="text-align: center; margin-top: 10px;">
+		    <el-button icon="yx-switch" type="info" @click="close">关闭</el-button>
+		</div>
+	</el-dialog>
+</div>

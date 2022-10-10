@@ -1,0 +1,30 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	<el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+      <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button>
+      <el-button icon="edit" @click="stopFn" v-if="checkPermission('stop')">停用</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" v-if="dialogVisible" width="650px" size="full">
+    <el-form-x ref="reform"
+           :group-fields="updateFields" :disabled="formDisabled" label-width="135px"></el-form-x>
+   	<div class="yu-grpButton" v-if="!formDisabled">
+        <el-button type="primary" @click=saveForm icon="check">保存</el-button>
+        <el-button type="primary" @click="submitForm" icon="check">提交</el-button>
+        <el-button type="primary" @click="closeForm" icon="yx-undo2">返回</el-button>
+    </div>
+  </el-dialog-x>
+</div>

@@ -1,0 +1,49 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+    <el-collapse v-model="activeNames">
+		<el-collapse-item title="规则集详情" name="1">
+				<el-form-x ref="sRuleCollForm"
+				:group-fields="sRuleCollField"
+				:disabled="true" label-width="120px"></el-form-x>
+		</el-collapse-item>
+		<el-collapse-item title="规则集配置明细" name="2">
+			<el-table-x ref="sRuleCollDtlTable" :row-index="true" :radiobox="false" :base-params="sRuleCollDtlParams"
+				:data-url="ruleCollDtlsUrl" :table-columns="sRuleCollDtlColumns" :request-type="'POST'" 
+				:default-load="false" @custom-row-click="lookDetail"></el-table-x>
+		</el-collapse-item>
+	</el-collapse>
+    
+    <el-dialog-x title="规则参数信息" :visible.sync="paramDialogVisible" width="600px" height="300px">
+    
+        <el-form-x ref="sRuleCollDtlParamForm" :group-fields="sRuleCollDtlField" :disabled="true" label-width="80px"></el-form-x>
+         
+         <div>
+            <el-table ref="sRuleCollDtlParamTable" :data="mainGrid.data" v-loading="mainGrid.loading"
+						:max-height="height" stripe border fit highlight-current-row >
+				<el-table-column label="参数ID" >
+					<template scope="scope">
+						<span >{{ scope.row.paramId }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="参数名称" >
+					<template scope="scope">
+						<span>{{ scope.row.ruleName }}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="参数值" >
+					<template scope="scope">
+						<span>{{ scope.row.paramVal}}</span>
+					</template>
+				</el-table-column>
+			</el-table>
+         </div>
+          <div align="center" style="margin-bottom: 50px;">  
+	          <el-button icon="yx-undo2" @click="rtnParam">返回</el-button>       
+          </div>         
+    </el-dialog-x>
+  
+</div>

@@ -1,0 +1,191 @@
+<!--
+  @create by 
+  @update by 
+  @description 
+-->
+<div>
+  <el-form-q :field-data="queryFields" :buttons="queryButtons" v-if="resetQuery" ref="form"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams" @custom-row-click="lmtApplySeqClick"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'" :default-load="false">
+  </el-table-x>
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full" >
+      <el-tabs type="border-card" v-model="tabName" :buttons="updateButtons" >
+      <el-tab-pane label="授信信息" name="first">
+             <el-collapse v-model="expandCollapseName" ref='basecollapse'>
+                <el-collapse-item title="授信信息" name="approveInfoSecond">
+                    <el-form-x ref="approveInfoRef" :group-fields="approveInfoFields" :disabled="formDisabled" label-width="150px"></el-form-x>
+                </el-collapse-item>
+                <el-collapse-item title="百度特色字段" name="baiduItem">
+                    <el-form-x ref="baiduRef" :group-fields="baiduFields" :disabled="formDisabled" label-width="150px"></el-form-x>
+                </el-collapse-item>
+                <!--<el-collapse-item title="其他" name="other">-->
+                    <!--<el-form-x ref="otherRef" :group-fields="otherFields" :disabled="formDisabled" label-width="150px"></el-form-x>-->
+                <!--</el-collapse-item>-->
+             </el-collapse>
+         </el-tab-pane>
+         <el-tab-pane label="申请人基本信息" name="baseTab">
+		     <el-collapse ref='basecollapseSecond' v-model="expandCollapseName">
+		        <el-collapse-item title="身份信息" name="identityInfo">
+		          <el-form-x ref="identityInfo" :group-fields=" identityInfoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+		        </el-collapse-item>
+		
+		        <el-collapse-item title="背景信息" name="backgroundInfo">
+		          <el-form-x ref="backgroundInfo" :group-fields="backgroundInfoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+		        </el-collapse-item>
+		
+		        <el-collapse-item title="婚姻信息" name="indivMarInFo">
+		          <el-form-x ref="indivMarInFo" :group-fields="indivMarInFoFields" :disabled="formDisabled" label-width="130px" :closable="true"></el-form-x>
+		        </el-collapse-item>
+		     </el-collapse>
+  		 </el-tab-pane>
+         
+<!--          <el-tab-pane label="申请人基本信息" name="second"> -->
+<!--          		<div style="padding: 10px;"> -->
+<!--                     <el-card style="width: 100%;" shadow="always" header="借款人信息" :body-style="{ padding: '0px' }"> -->
+<!--                         <div > -->
+<!--                             <el-form-x ref="baseInfoRef" :group-fields="baseInfoFields" label-width="150px"> -->
+<!--                             </el-form-x> -->
+<!--                         </div> -->
+<!--                     </el-card> -->
+<!--                 </div> -->
+<!--                 <div style="padding: 10px;"> -->
+<!--                     <el-card style="width: 100%;" shadow="always" header="联系人信息" :body-style="{ padding: '0px' }"> -->
+<!--                         <div > -->
+<!--                             <el-table-x ref="relftable" :row-index="true" :radiobox="false" :base-params="baseParamsRel" -->
+<!--                             :data-url="dataUrlRel" :table-columns="tableColumnsRel" :request-type="'POST'"> -->
+<!--                             </el-table-x> -->
+<!--                         </div> -->
+<!--                     </el-card> -->
+<!--                 </div> -->
+<!--              <div style="padding: 10px;"> -->
+<!--                  <el-card style="width: 100%;" shadow="always" header="身份信息" :body-style="{ padding: '0px' }"> -->
+<!--                      <div > -->
+<!--                          <el-form-x ref="baseInfo" :group-fields="identityInfoFields" label-width="150px"> -->
+<!--                          </el-form-x> -->
+<!--                      </div> -->
+<!--                  </el-card> -->
+<!--              </div> -->
+<!--              <div style="padding: 10px;"> -->
+<!--                  <el-card style="width: 100%;" shadow="always" header="背景信息" :body-style="{ padding: '0px' }"> -->
+<!--                      <div > -->
+<!--                          <el-form-x ref="baseInfo1" :group-fields="backgroundInfoFields" label-width="150px"> -->
+<!--                          </el-form-x> -->
+<!--                      </div> -->
+<!--                  </el-card> -->
+<!--              </div> -->
+<!--              <div style="padding: 10px;"> -->
+<!--                  <el-card style="width: 100%;" shadow="always" header="婚姻状况" :body-style="{ padding: '0px' }"> -->
+<!--                      <div > -->
+<!--                          <el-form-x ref="baseInfo2" :group-fields="indivMarInFoFields" label-width="150px"> -->
+<!--                          </el-form-x> -->
+<!--                      </div> -->
+<!--                  </el-card> -->
+<!--              </div> -->
+<!--              <div style="padding: 10px;"> -->
+<!--                  <el-card style="width: 100%;" shadow="always" header="联系信息" :body-style="{ padding: '0px' }"> -->
+<!--                      <div > -->
+<!--                          <el-form-x ref="baseInfo3" :group-fields="contInFoFields" label-width="150px"> -->
+<!--                          </el-form-x> -->
+<!--                      </div> -->
+<!--                  </el-card> -->
+<!--              </div> -->
+<!--              <div style="padding: 10px;"> -->
+<!--                  <el-card style="width: 100%;" shadow="always" header="单位信息" :body-style="{ padding: '0px' }"> -->
+<!--                      <div > -->
+<!--                          <el-form-x ref="baseInfo4" :group-fields="comInFoFields" label-width="150px"> -->
+<!--                          </el-form-x> -->
+<!--                      </div> -->
+<!--                  </el-card> -->
+<!--              </div> -->
+<!--              <div style="padding: 10px;"> -->
+<!--                  <el-card style="width: 100%;" shadow="always" header="收入信息" :body-style="{ padding: '0px' }"> -->
+<!--                      <div > -->
+<!--                          <el-form-x ref="baseInfo5" :group-fields="incomeInFoFields" label-width="150px"> -->
+<!--                          </el-form-x> -->
+<!--                      </div> -->
+<!--                  </el-card> -->
+<!--              </div> -->
+<!--              <div class="yu-grpButton" v-if="!formDisabled"> -->
+<!--              </div> -->
+<!--          </el-tab-pane> -->
+
+         
+         
+         <el-tab-pane label="征信报告" name="third">
+             <el-table-x ref="thirdReftable" :row-index="true" :radiobox="false" :base-params="baseParamsZX" :default-load="false" 
+                         :data-url="dataUrlZX" :table-columns="tableColumnsZX" :request-type="'POST'" >
+             </el-table-x>
+             <el-button type="primary" @click="getCredit" icon="check">查看征信报告</el-button>
+         </el-tab-pane>
+         
+         
+           <el-tab-pane label="网贷业务过程信息" name="nlsProcess">
+               <el-form-x ref="nlsProsBizInFo" :group-fields="nlsProsBizInFoFields" :disabled="formDisabled" label-width="130px" :closable="true"></el-form-x>
+          </el-tab-pane>
+
+
+          <el-tab-pane label="影像信息" name="imageTable" >
+                  <el-collapse v-model='imageManages' ref='basecollapse'>
+                      <el-collapse-item title="影像信息" name="imageManage">
+                          <el-table-x ref="imagesReftable" :radiobox="false"  :base-params="imagesParams"  @custom-row-click="batchSernoClick"
+                                      :data-url="dataUrlImages" :table-columns="tableColumnsImages" :default-load="false" :request-type="'POST'">
+                          </el-table-x>
+                      </el-collapse-item>
+                      <el-collapse-item title="影像信息2" name="imageManage2">
+                          <!--<el-table-x ref="imagesReftable" :radiobox="false"  :base-params="imagesParams"  @custom-row-click="batchSernoClick"
+                                      :data-url="dataUrlImages" :table-columns="tableColumnsImages" :default-load="false" :request-type="'POST'">
+                          </el-table-x>-->
+                      </el-collapse-item>
+                      <el-collapse-item title="影像信息(贷中)" name="imageManageLend">
+                          <!--<el-table-x ref="imagesReftableLend" :radiobox="false"  :base-params="imagesParamsLend"  @custom-row-click="batchSernoClick"
+                                      :data-url="dataUrlImagesLend" :table-columns="tableColumnsImagesLend" :default-load="false" :request-type="'POST'">
+                          </el-table-x>-->
+                          <el-form-q :field-data="queryFields1" :buttons="queryButtons1" v-if="resetQueryYX" ref="form"></el-form-q>
+                          <!--<div class="yu-toolBar">
+                              <el-button-group>
+                                  <el-button icon="plus" @click="uploadAnnexFn" v-if="viewType != 'DETAIL'">上传</el-button>
+                                  <el-button icon="document" @click="infoAnnexFn">查看</el-button>
+                              </el-button-group>
+                          </div>-->
+                          <el-table-x ref="imagesReftableLend" :radiobox="false"  :base-params="imagesParamsLend"  @custom-row-click="batchSernoClick"
+                                      :data-url="dataUrlImagesLend" :table-columns="tableColumnsImagesLend" :default-load="false" :request-type="'POST'">
+                          </el-table-x>
+                      </el-collapse-item>
+                  </el-collapse>
+              </el-tab-pane>
+          <!--<el-tab-pane label="影像信息" name="imageManage">
+              <el-table-x ref="imagesReftable" :radiobox="false"  :base-params="imagesParams"  @custom-row-click="batchSernoClick"
+                          :data-url="dataUrlImages" :table-columns="tableColumnsImages" :default-load="false" :request-type="'POST'">
+              </el-table-x>
+          </el-tab-pane>-->
+         <!--<el-tab-pane label="网贷业务过程信息" name="forth">-->
+             <!--<el-table-x ref="forthReftable" :row-index="true" :radiobox="false" :base-params="baseParamsSP" :default-load="false" -->
+                         <!--:data-url="dataUrl" :table-columns="tableColumnsSP" :request-type="'POST'" >-->
+             <!--</el-table-x>-->
+<!--&lt;!&ndash;              <el-button type="primary" @click="getAppLineup" icon="check">查看审批队列</el-button> &ndash;&gt;-->
+         <!--</el-tab-pane>-->
+
+<!--          <el-tab-pane label="电话核查" name="fifth"> -->
+<!--              <el-table-x ref="fifthReftable" :row-index="true" :radiobox="false" :base-params="baseParams" -->
+<!--                        :data-url="dataUrlXF" :table-columns="tableColumnXF" :default-load="false" :pageable="false"> -->
+<!--              </el-table-x> -->
+<!--          </el-tab-pane> -->
+<!--          <el-tab-pane label="获取影像信息" name="sixrth"> -->
+<!--              <el-button type="primary" @click="obtainImage" icon="check">获取影像信息</el-button> -->
+<!--          </el-tab-pane> -->
+         
+<!--          <el-tab-pane label="规则信息" name="sixth"> -->
+<!--              <el-table-x ref="sixthReftable" :row-index="true" :radiobox="false" :base-params="baseParams" -->
+<!--                 request-type="POST" :data-url="dataUrlRL" :table-columns="tableColumnRL" :default-load="false"> -->
+<!--              </el-table-x> -->
+<!--          </el-tab-pane> -->
+         
+      </el-tabs>
+      <el-form-x :buttons="updateButtons" ></el-form-x>
+  </el-dialog-x>
+</div>

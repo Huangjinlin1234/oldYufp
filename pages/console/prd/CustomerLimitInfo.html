@@ -1,0 +1,31 @@
+<!--
+	@create by wanglh4 on 2019-03-06
+	@update by 
+	@description 客户限额
+-->
+<div>
+  <!-- 	<el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q> -->
+
+  <div class="yu-toolBar" style="padding-top: 10px;">
+    <el-button-group>
+      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+      <!--       <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">详情</el-button> -->
+      <!--       <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button> -->
+      <!--       <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button> -->
+      <!--     </el-button-group> -->
+      <!--     <el-button-group style="margin-left: 10px"> -->
+      <el-button icon="yx-undo2" @click="setStatusFn('01')" v-if="checkPermission('edit')">生效</el-button>
+      <el-button icon="yx-bin" @click="setStatusFn('00')" v-if="checkPermission('edit')">失效</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="true" :base-params="baseParams"
+              :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" width="650px" size="full">
+    <el-form-x ref="reform"
+               :group-fields="updateFields" :buttons="updateButtons"
+               :disabled="formDisabled" label-width="80px"></el-form-x>
+  </el-dialog-x>
+</div>

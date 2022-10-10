@@ -1,0 +1,27 @@
+<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	  <!-- 合同页面  :disabled="contformDisabled"
+              <div class="yu-toolBar">
+                  <el-button icon="document" @click="continfoFn">查看</el-button>
+              </div>-->
+        <el-table-x ref="conttable" :row-index="true"   :radiobox="true"  :base-params="baseParams"
+                    :data-url="contUrl" :table-columns="contgstableColumns" :request-type="'POST'"></el-table-x>
+         <el-form-x ref="contform"   :group-fields="contupdateFields"  :disabled="true" label-width="130px"></el-form-x>     
+  
+  <!-- 合同页面新增 :disabled="contaddformDisabled" -->
+     <el-dialog-x :title="viewTitle[viewType]" :visible.sync="contadddialogVisible" size="full">
+      <el-table-x ref="contaddtable" :row-index="true"  :base-params="baseParams"
+                                   :data-url="contaddUrl" :table-columns="contaddtableColumns" :request-type="'POST'"></el-table-x>
+       <el-form-x ref="contaddform"   :group-fields="contaddupdateFields"  :disabled="true" label-width="120px"></el-form-x>     
+        
+             <div class="yu-grpButton">
+                      <el-button icon="yx-undo2" type="primary"  @click="contaddReturn">关闭</el-button>
+            </div>
+                            
+      </el-dialog-x>
+  
+</div>

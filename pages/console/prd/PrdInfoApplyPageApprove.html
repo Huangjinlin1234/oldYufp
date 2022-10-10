@@ -1,0 +1,27 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <div>
+        <el-collapse v-model="expandCollapseName">
+	        <el-collapse-item title="基本信息" name="base">
+	            <el-form-x ref="baseRef" :group-fields="baseFields" :disabled="formDisabled" label-width="135px"></el-form-x>
+	        </el-collapse-item>
+	        <el-collapse-item title="贷款要素控制" name="loan">
+	            <el-form-x ref="loanRef" :group-fields="loanFields" :disabled="formDisabled" label-width="135px"></el-form-x>
+	        </el-collapse-item>
+	        <el-collapse-item title="流程规则控制信息" name="other">
+	            <el-form-x ref="otherRef" :group-fields="otherFields" :disabled="formDisabled" label-width="135px"></el-form-x>
+	            
+	            <div id="prdRule"></div>
+	            <div id="prdChange"></div>
+	            
+	        </el-collapse-item>
+    	</el-collapse> 
+  
+  </div>
+</div>

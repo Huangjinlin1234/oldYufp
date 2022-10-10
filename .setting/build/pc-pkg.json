@@ -1,0 +1,23 @@
+{
+    "app": "app",
+    "appName": "YUFP统一前端平台",
+    "buildMock": false,
+    "customMcss": [],
+    "pageExclude": "pages/common/**/*.html",
+    "parallel": true,
+    "sourceMap": false,
+    "customMjs": [
+        "custom/common/app.data.service.js",
+        "custom/plugins/yufp.settings.js",
+        "custom/plugins/yufp.localstorage.js",
+        "custom/plugins/yufp.sessionstorage.js",
+        "custom/plugins/yufp.service.js",
+        "custom/plugins/yufp.validator.js",
+        "custom/plugins/yufp.util.js",
+        "custom/plugins/yufp.lookup.js",
+        "custom/plugins/yufp.session.js",
+        "custom/plugins/yufp.frame.js",
+        "custom/common/app.js",
+        "custom/route-tables/**"
+    ]
+}

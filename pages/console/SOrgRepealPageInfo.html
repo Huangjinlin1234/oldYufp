@@ -1,0 +1,49 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+
+	<el-form-q :field-data="queryFields" :buttons="queryButtons" ref="fm"></el-form-q>
+
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="detail" @click="infoFn" v-if="checkPermission('detail')" >查看</el-button>
+      <el-button icon="check" @click="checkFn" v-if="checkPermission('check')">重新检查</el-button>
+      <el-button icon="yx-undo2" @click="repealFn" v-if="checkPermission('repeal')">强制撤并</el-button>
+    </el-button-group>
+  </div>
+  
+  <el-table-x ref="reftable" :radiobox="false"  :base-params="baseParams" 
+	             :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'">
+  </el-table-x>
+
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+
+    <el-collapse v-model="expandCollapseName" ref='basecollapse'>
+
+      <el-collapse-item title="机构撤并检查历史表" name="1">
+
+        <el-form-q :field-data="queryFields1" :buttons="queryButtons1" ref="form1"></el-form-q>
+
+        <el-table-x ref="reftableHis"  :radiobox="false"  :base-params="baseParamsHis" @row-dblclick="rowClickFn"
+                    :data-url="dataUrlHis" :table-columns="chkTableColumns" :request-type="'POST'"></el-table-x>
+
+      </el-collapse-item>
+
+      <el-collapse-item title="机构撤并检查详情展示" name="2">
+
+        <el-form-x ref="baseRef" :group-fields="chkUpdateFields" label-width="125px" :disabled="formDisabled"></el-form-x>
+
+      </el-collapse-item>
+
+    </el-collapse>
+
+    <div class="yu-grpButton">
+      <el-button type="primary" icon="yx-undo2" @click="returnFn" >返回</el-button>
+    </div>
+
+  </el-dialog-x>
+
+</div>

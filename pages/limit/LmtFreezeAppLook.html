@@ -1,0 +1,16 @@
+<!--
+	@create by 
+	@update by 
+	@description 额度冻结审批查看
+-->
+<div>
+    <el-collapse v-model="expandCollapseName">
+        <el-collapse-item title="额度冻结申请基本信息" name="1">
+            <el-form-x ref="baseRef" :group-fields="updateFields" label-width="100px" :disabled="true">
+            </el-form-x>
+        </el-collapse-item>
+        <el-collapse-item title="合同列表信息" name="2">
+            <el-table-x ref="mytable" :data-url="contUrl" :table-columns="contListColumns" :request-type="'POST'" :default-load="false"></el-table-x>
+        </el-collapse-item>
+    </el-collapse>
+</div>

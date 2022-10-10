@@ -1,0 +1,45 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+  <el-tabs type="border-card" v-model="baseTab">
+    <el-tab-pane label="人工复核" name="baseTab" >
+
+      <el-collapse v-model="expandCollapseName" ref='basecollapse'>
+
+        <el-collapse-item title="客户信息" name="1">
+          <el-form-x ref="cusRef" :group-fields="cusFields" label-width="125px" :disabled="cusFormDisabled">
+          </el-form-x>
+        </el-collapse-item>
+
+        <el-collapse-item title="借贷信息" name="2">
+          <el-form-x ref="loanRef" :group-fields="loanFields" label-width="125px" :disabled="cusFormDisabled">
+          </el-form-x>
+        </el-collapse-item>
+
+        <el-collapse-item title="风控审批信息" name="3">
+          <el-form-x ref="riskRef" :group-fields="riskFields" label-width="125px" :disabled="riskFormDisabled">
+          </el-form-x>
+        </el-collapse-item>
+
+      </el-collapse>
+
+    </el-tab-pane>
+    <el-tab-pane label="人行征信">
+      <el-collapse v-model="zxExpandCollapseName" ref='basecollapse'>
+
+        <el-collapse-item title="征信报告" name="redititem">
+          <div class="yu-toolBar">
+            <el-button-group>
+              <el-button icon="check" @click="getContentFn" >查看征信报告</el-button>
+            </el-button-group>
+          </div>
+          <el-table-x ref="zxReftable" :row-index="true" :radiobox="false" :base-params="zxReftableParams"
+                      :data-url="dataUrlZx" :table-columns="zxReftableColumns" :request-type="'POST'"></el-table-x>
+        </el-collapse-item>
+      </el-collapse>
+    </el-tab-pane>
+  </el-tabs>
+</div>

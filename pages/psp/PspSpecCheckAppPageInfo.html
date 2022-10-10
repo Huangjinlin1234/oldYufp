@@ -1,0 +1,183 @@
+﻿<!--
+	@create by  luzhaoyu  2019/9/10
+	@update by 
+	@description   贷后检查-人工检查发起
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons" ref="form"></el-form-q>
+
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="plus" @click="addFn" v-if="checkPermission('create')" >新增</el-button>
+            <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')" >修改</el-button>
+            <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')" >查看</el-button>
+            <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')" >删除</el-button>
+            <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')" >导出</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :base-params="baseParams"
+                :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+    <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+       width="650px" height="380px"  :buttons="updateButtons"-->
+    <!--新增-->
+    <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+        <el-form-x ref="reform" :group-fields="infoFields" label-width="100px"></el-form-x>
+        <div class="yu-toolBar" v-show="infoShow">
+            <el-button-group>
+                <el-button icon="plus" @click="addSampleFn">新增(随机样本)</el-button>
+                <el-button icon="plus" @click="addImport">新增(批量导入)</el-button>
+                <el-button icon="yx-bin" @click="deleteSampleFn" v-show="true">删除</el-button>
+            </el-button-group>
+        </div>
+        <el-table-x ref="sampleReftable" :row-index="true" :base-params="samplebaseParams"
+                    :data-url="sampleUrl" :default-load="false" :table-columns="sampletableColumns"
+                    @custom-row-click="cusNameClick" :request-type="'POST'"></el-table-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="importsaveForm" icon="check" v-if="viewType == 'ADD'">保存</el-button>
+            <el-button type="primary" @click="editSaveForm" icon="check" v-if="viewType == 'EDIT'">保存</el-button>
+            <el-button type="primary" @click="importsubmitForm" icon="check" v-if="viewType == 'ADD'">提交</el-button>
+            <el-button type="primary" @click="editSubmitForm" icon="check" v-if="viewType == 'EDIT'">提交</el-button>
+            <el-button type="primary" @click="importbutton" icon="yx-undo2" v-if="viewType != 'DETAIL'">取消</el-button>
+            <el-button type="primary" @click="importbutton" icon="yx-undo2" v-if="viewType == 'DETAIL'">返回</el-button>
+        </div>
+    </el-dialog-x>
+
+    <el-dialog-x title="确认导出文件类型" :visible.sync="exportTipsVisible" width="25%" height="30%">
+        <div style="text-align: left;margin: 20px;">
+            <p>请选择要导出的文件类型。</p>
+        </div>
+        <div style="text-align: right;margin: 0,0,0,30px;">
+            <el-button type="primary" @click="exportExcelFn" icon="edit">Excel文件</el-button>
+            <el-button type="primary" @click="exportCsvFn" icon="edit">csv文件</el-button>
+            <el-button type="primary" @click="canExportFn" icon="yx-undo2">取消</el-button>
+        </div>
+    </el-dialog-x>
+
+    <!-- 新增 随机样本界面-->
+    <el-dialog title="随机样本" :visible.sync="sampleVisible" :before-close="buttonCont">
+
+        <el-form-q :field-data="queryNlsApplyInfoFields" :buttons="queryNlsApplyInfoButtons" ref="queryNlsApplyInfoForm"></el-form-q>
+
+        <!--<el-form-x ref="sampleform" :group-fields="sampleFields" :buttons="sampleButtons"></el-form-x>-->
+
+            <el-table-x ref="nlsApplyInfoRef" :row-index="true" :checkbox="true" :base-params="nlsApplyParams"
+                        :data-url="nlsApplyInfoUrl" style="padding-top: 8px" :default-load="false"
+                        :table-columns="nlsApplyInfoColumns" :request-type="'POST'"></el-table-x>
+
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="buttonReturn" icon="check">选取</el-button>
+            <el-button type="primary" @click="buttonCont" icon="yx-undo2">取消</el-button>
+        </div>
+
+    </el-dialog>
+
+    <!-- 新增 批量导入界面-->
+    <el-dialog titile="批量导入" :visible.sync="importBatchVisible" size="full" :before-close="importbuttonCont">
+        <el-form-x ref="reform2" :group-fields="infoFields2" label-width="100px"></el-form-x>
+        <el-button-group>
+            <el-button @click="importExcelFn" icon="upload">导入</el-button>
+            <el-button @click="downloadFn" icon="yx-file-excel">下载模板</el-button>
+        </el-button-group>
+
+        <el-table-x ref="nlsApplyInfoRef1" :row-index="true" :checkbox="true" :base-params="nlsApplyParams"
+                    :data-url="cusInfoIsNullURl" :default-load="true" :checkBox="true" style="padding-top: 8px"
+                    :table-columns="nlsApplyInfoColumns" :request-type="'POST'"></el-table-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="importReturn" icon="check">选取</el-button>
+            <el-button type="primary" @click="importbuttonCont" icon="yx-undo2">取消</el-button>
+        </div>
+    </el-dialog>
+
+
+    <el-dialog-x titile="导入文件" :visible.sync="importDialogVisible" width="70%" v-loading="loading2"
+                 element-loading-text="上传中">
+        <div style="text-align: center;">
+            <el-input style="width: 80%;padding-top: 20px" placeholder="上传文件名..." :value="fileExcelName"
+                      :disabled="true"></el-input>
+        </div>
+        <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+            <el-button-group>
+                <file-upload
+                        ref="upload"
+                        class="el-button"
+                        :post-action="uploadUrl"
+                        :extensions="extensions"
+                        :data="fileData"
+                        :headers="headers"
+                        v-model="files"
+                        accept="application/vnd.ms-excel,application/x-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        @input-filter="inputFilter"
+                        @input-file="inputFile"
+                        style="border-radius: 4px;background-color: #20a0ff;"
+                        type="primary">
+                    <i class="fa fa-plus"></i>
+                    <span style="color: #FFFFFF">选择文件</span>
+                </file-upload>
+                <el-button-group style="padding-left: 5px">
+                    <el-button style="border-radius: 4px;" type="primary" icon="upload" @click="commitFileFn">保存
+                    </el-button>
+                </el-button-group>
+                <el-button-group style="padding-left: 5px">
+                    <el-button style="border-radius: 4px;" type="primary" icon="yx-undo2" @click="cancelFn">取消
+                    </el-button>
+                </el-button-group>
+            </el-button-group>
+        </div>
+
+    </el-dialog-x>
+
+    <el-dialog-x title="错误信息" :visible.sync="tipsVisible" width="50%" height="80%">
+        <div class="el-table el-table--fit el-table--striped el-table--border el-table--enable-row-hover el-table--enable-row-transition"
+             style="overflow-y: scroll;max-height: 500px">
+            <div class="el-table__header-wrapper">
+                <table class="el-table el-table__header">
+                    <thead>
+                    <tr>
+                        <th style="width: 100px">序号</th>
+                        <th>错误信息</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(error, index) in errors" :key="error.id">
+                        <td>{{index + 1}}</td>
+                        <td>
+                            <div class="errorname">
+                                {{errors[index]}}
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+            <el-button-group>
+                <el-button class="cancelfn-btn" style="padding-left: 10px" icon="yx-undo2" @click="cancelFn1">关闭</el-button>
+            </el-button-group>
+        </div>
+    </el-dialog-x>
+
+    <!--客户基本信息展示-->
+    <el-dialog-x :title="viewTitle[viewType]" :visible.sync="cusInfodialogVisible" size="full" width="650px">
+        <el-collapse ref='basecollapse' v-model="expandCollapseName">
+
+            <el-collapse-item title="身份信息" name="identityInfo">
+                <el-form-x ref="identityInfo" :group-fields=" identityInfoFields" :disabled="true"
+                           label-width="130px"></el-form-x>
+            </el-collapse-item>
+
+            <el-collapse-item title="背景信息" name="backgroundInfo">
+                <el-form-x ref="backgroundInfo" :group-fields="backgroundInfoFields" :disabled="true"
+                           label-width="130px"></el-form-x>
+            </el-collapse-item>
+
+            <el-collapse-item title="婚姻信息" name="indivMarInFo">
+                <el-form-x ref="indivMarInFo" :group-fields="indivMarInFoFields" :disabled="true"
+                           label-width="130px"></el-form-x>
+            </el-collapse-item>
+        </el-collapse>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="infoButton" icon="yx-undo2">返回</el-button>
+        </div>
+    </el-dialog-x>
+</div>

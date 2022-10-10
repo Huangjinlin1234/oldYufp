@@ -1,0 +1,57 @@
+<!--
+	@create by   luzy   2019/9/9
+	@update by
+	@description  额度冻结
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons" ref="form"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+            <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+            <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+            <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">注销</el-button>
+            <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+                :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+    <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+       width="650px" height="380px" --><!--viewType != 'DETAIL'-->
+    <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+        <el-tabs type="border-card" v-model="baseTab">
+            <el-tab-pane label="申请信息" name="baseTab">
+                <el-collapse v-model="expandCollapseName">
+                    <el-collapse-item title="授信协议选择" name="lmtTable" v-show="itemShow">
+                        <!--viewType != 'DETAIL'-->
+                        <el-form-q ref="queryFm" :field-data="lmtQueryFields" @search-click="searchFn"
+                                   v-show="searchShow"></el-form-q>
+
+                        <el-table-x ref="lmtTable" :row-index="true" :radiobox="false" :base-params="contBaseParams"
+                                    :default-load="false" @row-dblclick="rowClickFn"
+                                    :data-url="lmtDataUrl" :table-columns="lmtTableColumns" :default-load="false"
+                                    :request-type="'POST'" :max-height="300" :disabled="formDisabled"></el-table-x>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="申请基本信息" name="baseRef" width="300">
+                        <el-form-x ref="baseRef" :group-fields="updateFields" label-width="125px"
+                                   :disabled="formDisabled">
+                        </el-form-x>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="借据列表信息" name="mytable">
+                        <el-table-x ref="mytable" :row-index="true" :base-params="loanBaseParams" :data-url="contUrl"
+                                    :table-columns="contListColumns" :request-type="'POST'" :default-load="false"
+                                    :disabled="formDisabled"></el-table-x>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-tab-pane>
+        </el-tabs>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-checkmark" @click="saveFn" v-if="viewType != 'DETAIL'">保存</el-button>
+            <el-button type="primary" icon="yx-checkmark" @click="commitFn" v-if="viewType != 'DETAIL'">提交</el-button>
+            <el-button type="primary" icon="yx-undo2" @click="returnFn" v-if="viewType != 'DETAIL'">取消</el-button>
+            <el-button type="primary" icon="yx-undo2" @click="returnFn" v-if="viewType == 'DETAIL'">返回</el-button>
+        </div>
+    </el-dialog-x>
+</div>

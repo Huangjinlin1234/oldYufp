@@ -1,0 +1,43 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+  
+  <el-col >
+		<el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+	  <div class="yu-toolBar">
+	    <el-button-group>
+	      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+	      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+	      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+	      <el-button icon="yx-bin" @click="disableFn" >失效</el-button>
+	    </el-button-group>
+	  </div>
+	  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+	        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"
+	        @custom-row-click="customRowClick" >
+	        </el-table-x>
+	        
+    </el-col>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+    <el-dialog :title="viewTitle[viewType]"   :visible.sync="dialogVisible" size="large" top="7%" v-if="dialogVisible">
+  
+    <div>
+          <el-form-x ref="reform"
+			       :group-fields="updateFields" :buttons="updateButtons"
+			      :disabled="formDisabled" label-width="220px" ></el-form-x>
+    </div> 
+      
+  </el-dialog>
+  
+  <el-dialog-x :title="'禁入行业查看列表'" :visible.sync="childDialogVisible" width="750px" top="10px">
+                    <el-form-q :field-data="forbidValueQueryFields" :buttons="forbidValueQueryButtons"></el-form-q>
+                    <el-table-x ref="forbidValueRetable" :row-index="true" :radiobox="false"
+                       :default-load="false" request-type="POST"
+                      :data-url="childDataUrl" :table-columns="forbidValue.tableColumns" ></el-table-x>
+  </el-dialog-x>
+    
+</div>

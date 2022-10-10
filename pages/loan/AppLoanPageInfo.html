@@ -1,0 +1,144 @@
+<!--
+  @create by 
+  @update by 
+  @description 
+-->
+<div>
+  <el-form-q :field-data="queryFields" :buttons="queryButtons" ref="form"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+    </el-button-group>
+  </div>
+  
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams" @custom-row-click="applySernoClick" 
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'" :default-load="false">
+  </el-table-x>
+  
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full" >
+      <el-tabs type="border-card" v-model="tabName" :buttons="updateButtons" >
+         <el-tab-pane label="基本信息" name="first">
+         	<el-collapse v-model="expandCollapseName" ref='basecollapse1'>
+         		<el-collapse-item title="贷款申请信息" name="applyInfo">
+         			<el-form-x ref="baseInfo" :group-fields="applyInfoFields" :disabled="formDisabled" label-width="150px"></el-form-x>
+         		</el-collapse-item>
+         		
+         		<el-collapse-item title="百度特色字段" name="baiduItemInfo">
+         			<el-form-x ref="baiduInfo" :group-fields="baiduItemFields" :disabled="formDisabled" label-width="150px"></el-form-x>
+         		</el-collapse-item>
+         	</el-collapse>
+<!--              <div style="padding: 10px;"> -->
+<!--                  <el-card style="width: 100%;" shadow="always" header="贷款申请信息" :body-style="{ padding: '0px' }"> -->
+<!--                      <div > -->
+<!--                          <el-form-x ref="baseInfo" :group-fields="identityInfoFields" label-width="150px"> -->
+<!--                          </el-form-x> -->
+<!--                      </div> -->
+<!--                  </el-card> -->
+<!--              </div> -->
+<!--              <div style="padding: 10px;"> -->
+<!--             	 <el-card style="width: 100%;" shadow="always" header="百度特色字段" :body-style="{ padding: '0px' }"> -->
+<!--                      <div > -->
+<!--                          <el-form-x ref="baiduInfo" :group-fields="baiduItemFields" label-width="150px"> -->
+<!--                          </el-form-x> -->
+<!--                      </div> -->
+<!--                  </el-card> -->
+<!--              </div> -->
+<!--              <div class="yu-grpButton" v-if="!formDisabled"> -->
+<!--              </div> -->
+         </el-tab-pane>
+         
+         <el-tab-pane label="申请人基本信息" name="baseTab">
+		     <el-collapse ref='basecollapse' v-model="expandCollapseName">
+		        <!-- <el-form-x  ref="identityInfo" :group-fields="identityInfoFields" :disabled="formDisabled"  label-width="130px" ></el-form-x> -->
+		        <el-collapse-item title="身份信息" name="identityInfo">
+		          <el-form-x ref="identityInfo" :group-fields=" identityInfoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+		        </el-collapse-item>
+		
+		        <el-collapse-item title="背景信息" name="backgroundInfo">
+		          <el-form-x ref="backgroundInfo" :group-fields="backgroundInfoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+		        </el-collapse-item>
+		
+		        <el-collapse-item title="婚姻信息" name="indivMarInFo">
+		          <el-form-x ref="indivMarInFo" :group-fields="indivMarInFoFields" :disabled="formDisabled" label-width="130px" :closable="true"></el-form-x>
+		        </el-collapse-item>
+		     </el-collapse>
+  		 </el-tab-pane>
+  		 
+  		 <el-tab-pane label="征信报告" name="third">
+             <el-table-x ref="thirdReftable" :row-index="true" :radiobox="false" :base-params="baseParamsZX" :default-load="false" 
+                         :data-url="dataUrlZX" :table-columns="tableColumnsZX" :request-type="'POST'" >
+             </el-table-x>
+             <el-button type="primary" @click="getCredit" icon="check">查看征信报告</el-button>
+         </el-tab-pane>
+         
+         <el-tab-pane label="网贷业务过程信息" name="forth">
+             <!--<el-table-x ref="forthReftable" :row-index="true" :radiobox="false" :base-params="baseParamsSP" :default-load="false" -->
+                         <!--:data-url="dataUrl" :table-columns="tableColumnsSP" :request-type="'POST'" >-->
+             <!--</el-table-x>-->
+             <el-form-x ref="nlsProsBizInFo" :group-fields="nlsProsBizInFoFields" :disabled="formDisabled" label-width="130px" :closable="true"></el-form-x>
+<!--              <el-button type="primary" @click="getAppLineup" icon="check">查看审批队列</el-button> -->
+         </el-tab-pane>
+         
+<!--          <el-tab-pane label="借款人详细信息" name="second"> -->
+<!--                 <div style="padding: 10px;"> -->
+<!--                     <el-card style="width: 100%;" shadow="always" header="借款人信息" :body-style="{ padding: '0px' }"> -->
+<!--                         <div > -->
+<!--                             <el-form-x ref="approveInfoRef" :group-fields="approveInfoFields" label-width="150px"> -->
+<!--                             </el-form-x> -->
+<!--                         </div> -->
+<!--                     </el-card> -->
+<!--                 </div> -->
+<!--                 <div style="padding: 10px;"> -->
+<!--                     <el-card style="width: 100%;" shadow="always" header="联系人信息" :body-style="{ padding: '0px' }"> -->
+<!--                         <div > -->
+<!--                             <el-table-x ref="relftable" :row-index="true" :radiobox="false" :base-params="baseParamsRel" -->
+<!--                             :data-url="dataUrlRel" :table-columns="tableColumnsRel" :request-type="'POST'"> -->
+<!--                             </el-table-x> -->
+<!--                         </div> -->
+<!--                     </el-card> -->
+<!--                 </div> -->
+<!--          </el-tab-pane> -->
+         
+<!--          <el-tab-pane label="网贷业务过程信息" name="nlsProcess"> -->
+<!--                 <div style="padding: 10px;"> -->
+<!--                     <el-card style="width: 100%;" shadow="always" header="网贷详细信息" :body-style="{ padding: '0px' }"> -->
+<!--                         <div > -->
+<!--                             <el-form-x ref="nlsProcessInfo" :group-fields="nlsProcessInfoFields" label-width="150px"> -->
+<!--                             </el-form-x> -->
+<!--                         </div> -->
+<!--                     </el-card> -->
+<!--                 </div> -->
+<!--          </el-tab-pane> -->
+         
+<!--          <el-tab-pane label="影像信息" name="imageManage"> -->
+<!--          <div style="padding: 10px;"> -->
+<!--          	<el-table-x ref="imagesReftable" :radiobox="false"  :base-params="imagesParams"  @custom-row-click="batchSernoClick"  -->
+<!-- 	                     :data-url="dataUrlImages" :table-columns="imageFields" :default-load="false" :request-type="'POST'"> -->
+<!-- 	         </el-table-x> -->
+<!--          </div> -->
+<!-- 	         <div style="height: 100%; width: 100%; overflow: hidden; position: absolute"> -->
+<!--                  <iframe :src="imageSrc" width="100%"   height="100%" style="border: none;" scrolling="no"></iframe> -->
+<!--              </div> -->
+<!-- 	      </el-tab-pane> -->
+         
+<!--          <el-tab-pane label="征信" name="third"> -->
+<!--              <el-table-x ref="thirdReftable" :row-index="true" :radiobox="false" :base-params="baseParamsZX" -->
+<!--                          :data-url=dataUrlZX :table-columns="tableColumnsZX" :default-load="false"  :request-type="'POST'" > -->
+<!--              </el-table-x> -->
+<!--              <el-button type="primary" @click="getCredit" icon="check">查看征信报告</el-button> -->
+<!--          </el-tab-pane> -->
+         
+<!--         <el-tab-pane label="电话核查" name="fifth"> -->
+<!--              <el-table-x ref="fifthReftable" :row-index="true" :radiobox="false" :base-params="baseParams" -->
+<!--                        :data-url="dataUrlXF" :table-columns="tableColumnXF" :default-load="false" :pageable="false"> -->
+<!--              </el-table-x> -->
+<!--          </el-tab-pane> -->
+<!--          <el-tab-pane label="获取影像信息" name="sixrth"> -->
+<!--              <el-button type="primary" @click="obtainImage" icon="check">获取影像信息</el-button> -->
+<!--          </el-tab-pane> -->
+         
+      </el-tabs>
+      <el-form-x ref="form7"  :buttons="updateButtons" ></el-form-x>
+  </el-dialog-x>
+  
+</div>

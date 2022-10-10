@@ -1,0 +1,121 @@
+<!--
+	@create by   luzy   2019/9/9
+	@update by
+	@description  分润申请
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons" v-if="showQueryButtons" ref="form"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+            <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+            <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit') && showEdtBtn">修改</el-button>
+            <el-button icon="delete" @click="deleteFn" v-if="checkPermission('delete') && showDelBtn">删除</el-button>
+        </el-button-group>
+    </div>
+
+    <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams" @row-click="rowClickFn"
+                :data-url="dataUrl" :table-columns="tableColumns" :request-type="'GET'"></el-table-x>
+
+    <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+        <el-tabs type="border-card" v-model="baseTab">
+            <el-tab-pane label="分润申请" name="baseTab">
+                <el-collapse v-model="expandCollapseName">
+                    <el-collapse-item title="数据录入" v-show="itemShow" name="previewRef">
+                        <el-table-x :row-index="true" :radiobox="false" ref="previewRef"
+                                    :table-data="previewData"
+                                    :table-columns="previewTableColumns" :default-load="false" :data-url="prevUrl"
+                                    :request-type="'GET'" :max-height="500" :disabled="formDisabled"></el-table-x>
+                        <div class="yu-toolBar">
+                            <el-button-group>
+                                <el-button icon="plus" @click="showOneFn">新增</el-button>
+                                <el-button icon="delete" @click="deleteUnCommitFn">删除</el-button>
+                                <el-button icon="upload" @click="importFn" >导入</el-button>
+                                <el-button @click="downloadFn" icon="yx-file-excel">下载模板</el-button>
+                            </el-button-group>
+                        </div>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-tab-pane>
+        </el-tabs>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-undo2" @click="returnFn">返回</el-button>
+            <el-button type="primary" icon="yx-checkmark" :loading="approving" @click="commitFn">提交复核</el-button>
+        </div>
+    </el-dialog-x>
+    <el-dialog title="详情" :visible.sync="showDetail" size="full">
+        <el-collapse ref='basecollapse' v-model="detailCollapseName">
+            <el-collapse-item title="基本信息" name="1">
+                <el-form-x ref="baseInfoRef" :group-fields="baseInfoFields" label-width="125px" disable="false">
+                </el-form-x>
+            </el-collapse-item>
+            <el-collapse-item title="历史审批信息" name="2">
+                <el-table-x :row-index="true" :radiobox="false" ref="aprvHisRef"
+                            :table-data="aprvHisData"
+                            :table-columns="aprvHisTableColumns" :default-load="false" :data-url="aprvHisUrl"
+                            :request-type="'GET'" :max-height="500"></el-table-x>
+            </el-collapse-item>
+        </el-collapse>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-undo2" @click="showDetail = false">返回</el-button>
+        </div>
+    </el-dialog>
+    <el-dialog-x title="新增一条" :visible.sync="addOne">
+        <el-form-x :group-fields="addFields" ref="one" label-width="125px"></el-form-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-checkmark" @click="saveOneFn">确定</el-button>
+            <el-button type="primary" icon="yx-undo2" @click="addOne = false">取消</el-button>
+        </div>
+    </el-dialog-x>
+    <el-dialog-x title="修改数据" :visible.sync="editOne">
+        <el-form-x :group-fields="editFields" ref="editOne" label-width="125px"></el-form-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-checkmark" :loading="approving" @click="editOneFn">提交复核</el-button>
+            <el-button type="primary" icon="yx-undo2" @click="editOne = false">取消</el-button>
+        </div>
+    </el-dialog-x>
+    <el-dialog-x title="附件" :visible.sync="dialogVisibleAnnex" size="large">
+        <el-form-x ref="annexForm" :group-fields="annexInfoFields" :disabled="annexFormDisabled"
+                   label-width="130px" style="padding: 12px 12px 24px 12px">
+        </el-form-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="saveAnnexFn" icon="check" v-if="flag != 'VIEWINFO'">保存</el-button>
+            <el-button type="primary" @click="cancleAnnesFn" icon="yx-undo2">取消</el-button>
+        </div>
+    </el-dialog-x>
+    <el-dialog-x titile="导入文件" :visible.sync="importDialogVisible" width="70%" v-loading="loading2"
+                 element-loading-text="上传中">
+        <div style="text-align: center;">
+            <el-input style="width: 80%;padding-top: 20px" placeholder="上传文件名..." :value="fileExcelName"
+                      :disabled="true"></el-input>
+        </div>
+        <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+            <el-button-group>
+                <file-upload
+                        ref="upload"
+                        class="el-button"
+                        :post-action="uploadUrl"
+                        :extensions="extensions"
+                        :data="fileData"
+                        :headers="headers"
+                        v-model="files"
+                        accept="application/vnd.ms-excel,application/x-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        @input-filter="inputFilter"
+                        @input-file="inputFile"
+                        style="border-radius: 4px;background-color: #20a0ff;"
+                        type="primary">
+                    <i class="fa fa-plus"></i>
+                    <span style="color: #FFFFFF">选择文件</span>
+                </file-upload>
+                <el-button-group style="padding-left: 5px">
+                    <el-button style="border-radius: 4px;" type="primary" icon="upload" @click="commitFileFn">保存
+                    </el-button>
+                </el-button-group>
+                <el-button-group style="padding-left: 5px">
+                    <el-button style="border-radius: 4px;" type="primary" icon="yx-undo2" @click="cancelFn">取消
+                    </el-button>
+                </el-button-group>
+            </el-button-group>
+        </div>
+    </el-dialog-x>
+</div>

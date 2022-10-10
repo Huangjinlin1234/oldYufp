@@ -1,0 +1,63 @@
+﻿<!--
+  @create by 
+  @update by 
+  @description 
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+            <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+            <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+            <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams" :data-url="freezeUrl" :table-columns="tableColumns"
+        :request-type="'POST'">
+    </el-table-x>
+    <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+       width="650px" height="380px" -->
+    <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+        <el-tabs type="border-card" v-model="baseTab">
+            <el-tab-pane label="额度冻结申请信息" name="baseTab" >
+                <el-collapse v-model="expandCollapseName">
+                    <el-collapse-item title="授信协议选择" name="1" v-show="viewType != 'DETAIL'">
+                        <el-form-q :field-data="lmtQueryFields" @search-click="searchFn"></el-form-q>
+                        <el-table-x ref="lmtTable" :data-url="lmtDataUrl" @row-click="rowClickFn"
+                            :table-columns="lmtTableColumns" :default-load="false" :max-height="300" request-type="POST">
+                        </el-table-x>
+                    </el-collapse-item>
+                    <el-collapse-item title="申请基本信息" name="2">
+                        <el-form-x ref="baseRef" :group-fields="updateFields" label-width="125px" :disabled="formDisabled">
+                        </el-form-x>
+                    </el-collapse-item>
+                    <el-collapse-item title="合同列表信息" name="3">
+                        <el-table-x ref="mytable" :data-url="contUrl" :table-columns="contListColumns" :request-type="'POST'" :default-load="false"></el-table-x>
+                    </el-collapse-item>
+                    <el-collapse-item title="审批信息" name="4" v-show="aprvVisible">
+                        <el-form-x ref="aprvForm" :group-fields="aprvFields" label-width="125px" :disabled="true">
+                        </el-form-x>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-tab-pane>
+            <!-- <el-tab-pane label="征信" name="zx">
+                <el-table-x ref="thirdReftable" :row-index="true" :radiobox="false"
+                    :data-url="dataUrlZX" :table-columns="tableColumnsZX" :default-load="false" request-type="POST" ></el-table-x>
+                <el-button type="primary" @click="getCredit" icon="check">查看征信报告</el-button>
+            </el-tab-pane> -->
+            <el-tab-pane label="风险提示" name="second">
+                <el-table-x ref="passTable" :row-index="true" :default-load="false" :data-url="passUrl" :table-columns="passColumns"
+                    :request-type="'POST'">
+                </el-table-x>
+            </el-tab-pane>
+        </el-tabs>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-checkmark" @click="saveFn" v-if="viewType != 'DETAIL'">保存</el-button>
+            <el-button type="primary" icon="yx-checkmark" @click="commitFn" v-if="viewType != 'DETAIL'">提交</el-button>
+            <el-button type="primary" icon="yx-undo2" @click="returnFn">返回</el-button>
+        </div>
+    </el-dialog-x>
+
+
+</div>

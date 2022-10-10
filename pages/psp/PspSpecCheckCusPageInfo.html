@@ -1,0 +1,98 @@
+﻿<!--
+	@create by
+	@update by
+	@description
+-->
+<div>
+  <el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+        <el-button icon="edit" @click="modifyFn" >登记</el-button>
+        <!--v-if="checkPermission('edit')"-->
+        <el-button icon="document" @click="infoFn" >查看</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams1"
+              :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+      <el-tabs type="border-card" v-model="baseTab">
+          <el-tab-pane label="登记信息" name="baseTab" >
+              <el-collapse v-model="expandCollapseName" ref='basecollapse'>
+                  <el-collapse-item title="登记基本信息" name="reform">
+                      <el-form-x ref="form1" :group-fields="updateFields" label-width="135px" :disabled="formDisabled" ></el-form-x>
+                      <!--<el-from-x ref="reform" :group-fields="updateFields1" :disabled="formDisabled1" lable-width="100px" ></el-from-x>-->
+                  </el-collapse-item>
+                  <el-collapse-item title="客户基本信息" name="cusfore">
+                      <el-form-x ref="formCus" :group-fields="updateFields5" label-width="135px" :disabled="formDisabled" ></el-form-x>
+                  </el-collapse-item>
+                  <el-collapse-item title="行内贷款信息" name="billtable" >
+                      <el-form-x ref="form2" :group-fields="updateFields2"
+                                 :disabled="cusDisabled" label-width="135px"></el-form-x>
+                  <el-table-x ref="billtable"  :row-index="true" :data-url="dataUrl1"
+                              :table-columns="tableColumns1" :max-height="300" request-type="POST">
+                  </el-table-x>
+                  </el-collapse-item>
+                  <el-collapse-item title="风险预警信息" name="warntable">
+                      <el-table-x ref="warntable"  :base-params="baseParams" :row-index="true"
+                                  :data-url="dataUrl2" :table-columns="tableColumns2" :request-type="'POST'" ></el-table-x>
+                  </el-collapse-item>
+                  <el-collapse-item title="登记信息" name="form">
+                      <el-form-x ref="form3" :group-fields="updateFields3" :disabled="formDisabled" ></el-form-x>
+                      <el-form-x ref="form4" :group-fields="updateFields4" :disabled="formDisabled" ></el-form-x>
+                  </el-collapse-item>
+                  <el-collapse-item title="附件上传" name="stable">
+                      <div class="yu-toolBar">
+                          <el-button-group>
+                              <el-button icon="plus" @click="uploadAnnexFn" v-if="viewType != 'DETAIL'">上传</el-button>
+                              <el-button icon="document" @click="infoAnnexFn">查看</el-button>
+                          </el-button-group>
+                      </div>
+                      <el-table-x ref="reftableAnnex"  :base-params="baseParamsAnnex"
+                                  :data-url="dataUrlAnnex" :table-columns="tableColumnsAnnex" :request-type="'POST'" >
+                      </el-table-x>
+                  </el-collapse-item>
+              </el-collapse>
+              <div class="yu-grpButton">
+                 <!-- <el-button type="primary" icon="document" @click="clickReturn">返回</el-button>-->
+                  <el-button type="primary" icon="yx-checkmark" @click="submitFn" v-if="viewType != 'DETAIL'">提交</el-button>
+                  <el-button type="primary" icon="yx-undo2" @click="returnFn" v-if="viewType != 'DETAIL'">返回</el-button>
+              </div>
+          </el-tab-pane>
+          <el-tab-pane label="人行征信">
+              <el-collapse v-model="zxExpandCollapseName" ref='basecollapse'>
+                  <el-collapse-item title="人行征信" name="cdpReitem">
+                      <el-table-x ref="cdpReftable" :row-index="true" :radiobox="false" :base-params="cdpReftableParams"
+                                  :data-url="dataUrlcomm" :table-columns="cdpReftableColumns" :request-type="'POST'"></el-table-x>
+                  </el-collapse-item>
+                  <el-collapse-item title="征信报告" name="redititem">
+                      <div class="yu-toolBar">
+                          <el-button-group>
+                              <el-button icon="check" @click="getContentFn" >查看征信报告</el-button>
+                          </el-button-group>
+                      </div>
+                      <el-table-x ref="zxReftable" :row-index="true" :radiobox="false" :base-params="zxReftableParams"
+                                  :data-url="dataUrlZx" :table-columns="zxReftableColumns" :request-type="'POST'"></el-table-x>
+                     <!-- <el-button type="primary" @click="getNewestCredit" icon="check">查看最新征信报告</el-button>
+                      <el-button type="primary" @click="getHistoryCredit" icon="check">查看历史征信报告</el-button>-->
+                  </el-collapse-item>
+              </el-collapse>
+          </el-tab-pane>
+      </el-tabs>
+      <div class="yu-grpButton">
+          <el-button type="primary" icon="yx-undo2" @click="returnFn" v-if="viewType == 'DETAIL'">返回</el-button>
+      </div>
+  </el-dialog-x>
+
+    <el-dialog-x title="附件" :visible.sync="dialogVisibleAnnex" size="large">
+        <el-form-x ref="annexForm" :group-fields="annexInfoFields" :disabled="annexFormDisabled"
+                   label-width="130px" style="padding: 12px 12px 24px 12px">
+        </el-form-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="saveAnnexFn" icon="check" v-if="flag != 'VIEWINFO'">保存</el-button>
+            <el-button type="primary" @click="cancleAnnesFn" icon="yx-undo2" v-if="flag != 'VIEWINFO'">取消</el-button>
+            <el-button type="primary" @click="cancleAnnesFn" icon="check" v-if="flag == 'VIEWINFO'">返回</el-button>
+        </div>
+    </el-dialog-x>
+</div>

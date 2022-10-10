@@ -1,0 +1,208 @@
+<div>
+  <div class="dashboard-container">
+      <yu-row :gutter="16">
+          <yu-col :span="16">
+              <yu-row>
+                  <div class="yu-dashboard-box">
+                    <div class="yu-zrc-title">
+                      <h1>我的工作</h1>
+                    </div>
+                    <div class="yu-dashboard-other-tips">
+                      <a href="javascript:void(0);" @click="openPage(0)">
+                        <i v-text="tipsData.todo"></i>
+                        <span>待审批</span>
+                      </a>
+                      <a href="javascript:void(0);" @click="openPage(1)">
+                        <i v-text="tipsData.ticket"></i>
+                        <span>待投票</span>
+                      </a>
+                      <a href="javascript:void(0);" @click="openPage(2)">
+                        <i v-text="tipsData.poolsize"></i>
+                        <span>待认领</span>
+                      </a>
+                      <div>
+                        <a href="javascript:void(0);" @click="openPage(3)">
+                          <i v-text="tipsData.done"></i>
+                          <span>已办事项</span>
+                        </a>
+                        <div></div>
+                        <a href="javascript:void(0);" @click="openPage(4)">
+                          <i v-text="tipsData.his"></i>
+                          <span>办结事项</span>
+                        </a>
+                        <div></div>
+                        <a href="javascript:void(0);" @click="openPage(5)">
+                          <i v-text="tipsData.copy"></i>
+                          <span>抄送事项</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+              </yu-row>
+              <yu-row>
+                <div class="yu-dashboard-box" style="min-height: 250px;">
+                  <div class="yu-zrc-title">
+                    <h1>常用功能</h1>
+                    <a href="javascript:void(0);" @click="openPage">设置</a>
+                  </div>
+                  <div class="yu-commfunc-box" style="padding:0 24px 16px 24px;">
+                    <span v-for="(item, i) in myData" :class="{ funcitem: true, yellow: coloryellow.indexOf(i) > -1, default: colordefault.indexOf(i) > -1, purple: colorpurple.indexOf(i) > -1, green: colorgreen.indexOf(i) > -1 }" :key="i" @click="openMenu(item)" :title="item.title">
+                      <i :class="item.icon"></i>
+                      <span>{{ item.title.length > 7 ? item.title.substr(0, 7) + "..." : item.title }}</span>
+                    </span>
+                  </div>
+                </div>
+              </yu-row>
+          </yu-col>
+          <yu-col :span="8">
+            <yu-row>
+              <!-- 提醒中心 -->
+              <div class="yu-dashboard-box" style="min-height: 448px;">
+                <div class="yu-zrc-title notice-center">
+                  <h1 :class="activeIndex == 1 ? 'select' : ''" @click="activeIndex = 1" @dblclick="openPage">风险提示(<span v-text="risknum"></span>)</h1>
+                  <h1 :class="activeIndex == 3 ? 'select' : ''" @click="activeIndex = 3" @dblclick="openPage">问题交流(<span v-text="prbnum"></span>)</h1>
+                  <a href="javascript:void(0);" @click="openPage">更多</a>
+                </div>
+                <div class="yu-dashboard-content">
+                  <div style="padding:0 24px 20px 24px;">
+                    <div v-show="activeIndex == 1" v-if="!hiddenRisk" style="margin-top: -4px;">
+                      <div class="risk-row" v-for="(item, index) in riskData" :key="index">
+                        <span :class="'messageType' + item.messageType" v-text="getlookup(item.messageType,'STD_WB_RISK_MESSAGE_TYPE')"></span>
+                        <span v-text="item.cusName"></span>
+                        <span v-text="item.endDate"></span>
+                      </div>
+                      <div v-if="riskData.length==0" style="display: flex;height: 385px;">
+                       <img style="margin: auto" src="@/assets/zrcbank/images/缺省图标.png"/>
+                       <div style="position: absolute;    margin-top: 50%;    margin-left: 39%;    font-size: 14px;">暂无内容</div>
+                      </div>
+                    </div>
+                    <div v-show="activeIndex == 3" style="margin-top: -4px;">
+                      <div class="prb-comm-row" v-for="(item, index) in prbcommData" :key="index" >
+                        <span v-text="getlookup(item.messageType,'STD_WB_PRB_MESSAGE_TYPE')"></span>
+                        <span :class="'status' + item.status"  v-text="getlookup(item.status,'STD_WB_PRB_STATUS')"></span>
+                        <span v-text="item.pubTime"></span>
+                        <span v-text="item.content.length>32?item.content.substr(0,32)+'...': item.content " :title="item.content"></span>
+                      </div>
+                      <div v-if="prbcommData.length==0" style="display: flex;height: 385px;">
+                       <img style="margin: auto" src="@/assets/zrcbank/images/缺省图标.png"/>
+                       <div style="position: absolute;    margin-top: 50%; margin-left: 39%;font-size: 14px;">暂无内容</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </yu-row>
+          </yu-col>
+      </yu-row>
+      <yu-row :gutter="16">
+        <yu-col :span="16">
+          <div class="yu-dashboard-box">
+            <div class="yu-zrc-title">
+              <h1>系统链接</h1>
+            </div>
+            <div class="out-url-link" style="padding:0px 0px 16px;">
+              <div>
+                <span class="zrcbk-icon-xitonglianjie-yapinguanlixitong" title="押品管理系统"  @click="openGuar">押品管理系统</span>
+                <span class="zrcbk-icon-xitonglianjie-feilingneiping"  title="非零内评系统" @click="enterNPSystem">非零内评系统</span>
+                <span class="zrcbk-icon-xitonglianjie-fengxian"  title="风险预警系统" @click="doDel">风险预警系统</span>
+                <span class="zrcbk-icon-xitonglianjie-zhinengshenpi"  title="智能审批系统" @click="sysApproval">智能审批系统</span>
+                <span class="zrcbk-icon-xitonglianjie-jixiaoxitong"  title="绩效系统"  @click="sysPas">绩效系统</span>
+              </div>
+              <div>
+                <span class="zrcbk-icon-xitonglianjie-budongchandengji"   @click="doHLWYP" plain>不动产登记</span>
+                <span class="zrcbk-icon-xitonglianjie-xinweidai"   @click="doXWD" plain>新微贷系统</span>
+              </div>
+            </div>
+          </div>
+        </yu-col>
+        <yu-col :span="8">
+          <div class="yu-dashboard-box" style="min-height: 160px;">
+            <div class="yu-zrc-title">
+              <h1>工具箱</h1>
+            </div>
+            <div class="yu-toolkit-box">
+              <div @click="calendardialogVisible = !calendardialogVisible">
+                <i class="zrcbk-icon-yirili"></i>
+                <span>工作日历</span>
+              </div>
+              <div @click="loanCalcdialogVisible = !loanCalcdialogVisible">
+                <i class="zrcbk-icon-yijisuanqi"></i>
+                <span>贷款计算器</span>
+              </div>
+              <div @click="addwbprbCommFn">
+                <i class="zrcbk-icon-yijiantucao"></i>
+                <span>一键吐槽</span>
+              </div>
+              <div @click="openRepobaseFn">
+                <i class="zrcbk-icon-yizhishiku"></i>
+                <span>知识库</span>
+              </div>
+            </div>
+          </div>
+        </yu-col>
+      </yu-row>
+      <yu-row>
+        <div class="yu-dashboard-box">
+          <div class="yu-zrc-title">
+            <h1>统计分析</h1>
+          </div>
+          <div style="padding:0 24px 20px 24px;">
+              <yu-tabs v-model="activeName">
+                  <yu-tab-pane label="客户数量统计表" name="first">
+                    <yu-xtable ref="refTable" request-type="POST" condition-key="condition" selection-type="radio" row-number :data-url="url.bizCusCountUrl">
+                      <yu-xtable-column label="主管客户经理" prop="managerIdName"></yu-xtable-column>
+                      <yu-xtable-column label="主管机构" prop="managerBrIdName"></yu-xtable-column>
+                      <yu-xtable-column label="当前管户融资户数" prop="totalCusCount" width="140"></yu-xtable-column>
+                      <yu-xtable-column label="公司类融资户数" prop="cusComCount"></yu-xtable-column>
+                      <yu-xtable-column label="小企业类融资户数" prop="smCusCount" width="140"></yu-xtable-column>
+                      <yu-xtable-column label="贷款客户数" prop="loanCount"></yu-xtable-column>
+                      <yu-xtable-column label="非贷款客户数" prop="ohterLoanCount"></yu-xtable-column>
+                    </yu-xtable>
+                  </yu-tab-pane>
+                  <yu-tab-pane label="信贷客户核心业绩统计表" name="second" >
+                    <yu-xtable ref="refTable" selection-type="radio" row-number request-type="POST" condition-key="condition" :data-url="url.xdhxTotalUrl">
+                      <yu-xtable-column label="客户经理" prop="cusManagerName"></yu-xtable-column>
+                      <yu-xtable-column label="所属机构" prop="orgIdName"></yu-xtable-column>
+                      <yu-xtable-column label="客户编号" prop="cusId"></yu-xtable-column>
+                      <yu-xtable-column label="客户名称" prop="cusName"></yu-xtable-column>
+                      <yu-xtable-column label="贷款余额年日均" prop="dkyerj"></yu-xtable-column>
+                      <yu-xtable-column label="较上年末新增额" prop="jsnmxze"></yu-xtable-column>
+                      <yu-xtable-column label="存款余额年日均" prop="ckyerj"></yu-xtable-column>
+                      <yu-xtable-column label="较上年新增额" prop="jsnxze"></yu-xtable-column>
+                      <yu-xtable-column label="上日账户存款余额合计" prop="srzhckjehj"></yu-xtable-column>
+                      <yu-xtable-column label="当前账户存款余额" prop="dqzhckye"></yu-xtable-column>
+                    </yu-xtable>
+                  </yu-tab-pane>
+                  <yu-tab-pane label="管理资产统计表" name="third"  >
+                    <yu-xtable ref="refTable" selection-type="radio" row-number request-type="POST" condition-key="condition" :data-url="url.assetsAnalyse">
+                      <yu-xtable-column label="主管客户经理" prop="managerId"></yu-xtable-column>
+                      <yu-xtable-column label="主管机构" prop="managerBrId"></yu-xtable-column>
+                      <yu-xtable-column label="管理资产户数" prop="normalCusCount"></yu-xtable-column>
+                      <yu-xtable-column label="管理资产笔数" prop="normalAccCount"></yu-xtable-column>
+                      <yu-xtable-column label="管理资产余额" prop="normalTotalBalance"></yu-xtable-column>
+                      <yu-xtable-column label="瑕疵资产户数" prop="flawCusCount"></yu-xtable-column>
+                      <yu-xtable-column label="瑕疵资产笔数" prop="flawAccCount"></yu-xtable-column>
+                      <yu-xtable-column label="瑕疵资产余额" prop="flawTotalBalance"></yu-xtable-column>
+                      <yu-xtable-column label="不良资产户数" prop="badCusCount"></yu-xtable-column>
+                      <yu-xtable-column label="不良资产笔数" prop="badAccCount"></yu-xtable-column>
+                      <yu-xtable-column label="不良资产余额" prop="badTotalBalance"></yu-xtable-column>
+                    </yu-xtable>
+                  </yu-tab-pane>
+                  <yu-tab-pane label="不良资产统计表" name="fourth"   >
+                    <yu-xtable ref="refTable" selection-type="radio" row-number request-type="POST" condition-key="condition" :data-url="url.badassetsUrl">
+                      <yu-xtable-column label="主管客户经理" prop="managerId"></yu-xtable-column>
+                      <yu-xtable-column label="主管机构" prop="managerBrId"></yu-xtable-column>
+                      <yu-xtable-column label="本月新增不良资产户数" prop="monthAddBadcusCount"></yu-xtable-column>
+                      <yu-xtable-column label="本月新增不良资产笔数" prop="monthAddBadaccCount"></yu-xtable-column>
+                      <yu-xtable-column label="本月新增不良资产余额" prop="monthAddBadtotalBalance"></yu-xtable-column>
+                      <yu-xtable-column label="本年度新增不良资产户数" prop="yearAddBadcusCount"></yu-xtable-column>
+                      <yu-xtable-column label="本年度新增不良资产笔数" prop="yearAddBadaccCount"></yu-xtable-column>
+                      <yu-xtable-column label="本年度新增不良资产余额" prop="yearAddBadtotalBalance"></yu-xtable-column>
+                    </yu-xtable>
+                  </yu-tab-pane>
+                </yu-tabs>
+          </div>
+        </div>
+      </yu-row>
+  </div>
+</div>

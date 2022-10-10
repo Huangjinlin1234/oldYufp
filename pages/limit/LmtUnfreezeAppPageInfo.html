@@ -1,0 +1,121 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	<el-form-q :field-data="queryFields" :buttons="queryButtons" ref="query"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="plus" @click="addFn" >新增</el-button>
+      <el-button icon="edit" @click="modifyFn" >修改</el-button>
+      <el-button icon="document" @click="infoFn" >查看</el-button>
+      <el-button icon="yx-bin" @click="deleteFn" >注销</el-button>
+      <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button>
+      <el-button @click="importFn" icon="upload" v-if="checkPermission('import')">导入</el-button>
+      <el-button @click="downloadFn" icon="yx-file-excel" v-if="checkPermission('downLoadFn')">下载模板</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <el-dialog-x titile="额度解冻" :visible.sync="dialogVisible" size="full">
+    <el-tabs type="border-card" v-model="baseTab">
+      <el-tab-pane label="额度解冻申请信息" name="baseTab" >
+        <el-collapse v-model="expandCollapseName" ref="basecollapse">
+          <el-collapse-item title="授信协议选择" name="lmtTable" v-show="viewType != 'DETAIL'">
+            <el-form-q :field-data="lmtQueryFields" @search-click="searchFn" ref="queryFm" ></el-form-q>
+
+            <el-table-x ref="lmtTable" :row-index="true" :data-url="lmtDataUrl" @row-dblclick="rowClickFn" :base-params="lmtStsParams"
+                        :table-columns="lmtTableColumns" :default-load="false" :max-height="300" request-type="POST">
+            </el-table-x>
+          </el-collapse-item>
+
+          <el-collapse-item title="申请基本信息" name="baseRef" width="300">
+            <el-form-x ref="baseRef" :group-fields="updateFields" label-width="125px" :disabled="formDisabled">
+            </el-form-x>
+          </el-collapse-item>
+
+          <el-collapse-item title="借据列表信息" name="mytable">
+            <el-table-x ref="mytable" :row-index="true" :data-url="contUrl" :table-columns="contListColumns" :request-type="'POST'" :default-load="false"></el-table-x>
+          </el-collapse-item>
+
+          <el-collapse-item title="风险预警信息" name="mywarnlog">
+            <el-table-x ref="mywarnlog" :row-index="true" :data-url="warnLogUrl" :table-columns="warnLogListColumns" :request-type="'POST'" :default-load="false"></el-table-x>
+          </el-collapse-item>
+
+        <el-collapse-item title="上传" name="baseUpload">
+          <div class="yu-toolBar">
+            <el-button-group>
+              <el-button icon="plus" @click="uploadAnnexFn" v-if="viewType != 'DETAIL'">上传</el-button>
+              <!--<el-button icon="document" @click="modifyAnnexFn">修改</el-button>-->
+              <el-button icon="document" @click="infoAnnexFn">查看</el-button>
+              <!--<el-button icon="document" @click="deleteAnnexFn">删除</el-button>-->
+            </el-button-group>
+          </div>
+
+          <el-table-x ref="reftableAnnex"  :base-params="baseParamsAnnex"
+                      :data-url="dataUrlAnnex" :table-columns="tableColumnsAnnex" :request-type="'POST'" >
+          </el-table-x>
+        </el-collapse-item>
+        </el-collapse>
+      </el-tab-pane>
+    </el-tabs>
+    <div class="yu-grpButton">
+      <el-button type="primary" icon="yx-checkmark" @click="saveFn" v-if="viewType != 'DETAIL'">保存</el-button>
+      <el-button type="primary" icon="yx-checkmark" @click="commitFn" v-if="viewType != 'DETAIL'">提交</el-button>
+      <el-button type="primary" icon="yx-undo2" @click="cancleFn" v-if="viewType != 'DETAIL'">取消</el-button>
+      <el-button type="primary" icon="yx-undo2" @click="returnFn" v-if="viewType == 'DETAIL'">返回</el-button>
+    </div>
+  </el-dialog-x>
+
+  <el-dialog-x titile="导入文件" :visible.sync="importDialogVisible" width="70%" v-loading="loading2"
+               element-loading-text="上传中">
+    <div style="text-align: center;">
+      <el-input style="width: 80%;padding-top: 20px" placeholder="上传文件名..." :value="fileExcelName"
+                :disabled="true"></el-input>
+    </div>
+    <div class="yu-toolBar" style="text-align: center;margin-top: 20px;">
+      <el-button-group>
+        <file-upload
+                ref="upload"
+                class="el-button"
+                :post-action="uploadUrl"
+                :extensions="extensions"
+                :data="fileData"
+                :headers="headers"
+                v-model="files"
+                accept="application/vnd.ms-excel,application/x-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                @input-filter="inputFilter"
+                @input-file="inputFile"
+                style="border-radius: 4px;background-color: #20a0ff;"
+                type="primary">
+          <i class="fa fa-plus"></i>
+          <span style="color: #FFFFFF">选择文件</span>
+        </file-upload>
+        <el-button-group style="padding-left: 5px">
+          <el-button style="border-radius: 4px;" type="primary" icon="upload" @click="commitFileFn">保存
+          </el-button>
+        </el-button-group>
+        <el-button-group style="padding-left: 5px">
+          <el-button style="border-radius: 4px;" type="primary" icon="yx-undo2" @click="cancelFn">取消
+          </el-button>
+        </el-button-group>
+      </el-button-group>
+    </div>
+
+  </el-dialog-x>
+
+  <el-dialog-x title="附件" :visible.sync="dialogVisibleAnnex" size="large">
+    <el-form-x ref="annexForm" :group-fields="annexInfoFields" :disabled="annexFormDisabled"
+               label-width="130px" style="padding: 12px 12px 24px 12px">
+    </el-form-x>
+    <div class="yu-grpButton">
+      <el-button type="primary" @click="saveAnnexFn" icon="check" v-if="flag != 'VIEWINFO'">保存</el-button>
+      <el-button type="primary" @click="cancleAnnesFn" icon="yx-undo2">取消</el-button>
+      <!--<el-button type="primary" @click="getHistoryCredit" icon="check">返回</el-button>-->
+    </div>
+  </el-dialog-x>
+
+</div>

@@ -1,0 +1,82 @@
+<!--
+	@create by
+	@update by
+	@description
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons" ref="form"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+            <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+            <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">详情</el-button>
+            <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button>
+            <!--<el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')"
+                       v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="导出中...">导出
+            </el-button>-->
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+                :data-url="dataURL" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+
+    <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+
+         <el-collapse v-model="expandCollapseName" ref='basecollapse'>
+
+                    <el-collapse-item title="核销借据清单" name="1">
+                        <el-form-q :field-data="queryFields1" :buttons="queryButtons1" ref="form1"></el-form-q>
+                        <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')"
+                                   v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="导出中...">导出
+                        </el-button>
+                        <el-table-x ref="createreftable"  :radiobox="false" :checkbox="true" :base-params="createbaseParams"
+                                    :data-url="dataURL2" :table-columns="createtableColumns" :request-type="'POST'"></el-table-x>
+                    </el-collapse-item>
+
+                 <el-collapse-item title="核销借据清单" name="4">
+                     <el-table-x ref="mytable"  :radiobox="false"  :base-params="mytableParams"
+                                 :data-url="dataURL" :table-columns="createtableColumns" :request-type="'POST'"></el-table-x>
+                 </el-collapse-item>
+                    <el-collapse-item title="核销原因" name="2">
+                        <el-form-x ref="baseRef" :group-fields="updateFields" label-width="125px" :disabled="formDisabled">
+                        </el-form-x>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="上传" name="3">
+                        <!--<el-button icon="upload" type="primary" @click="uploadAnnexFn" >上传</el-button>-->
+
+                        <el-button icon="plus" @click="uploadAnnexFn">上传</el-button>
+                        <!--<el-button icon="document" @click="modifyAnnexFn">修改</el-button>-->
+                        <el-button icon="document" @click="infoAnnexFn">查看</el-button>
+                        <!--<el-button icon="document" @click="deleteAnnexFn">删除</el-button>-->
+
+                        <el-table-x ref="reftableAnnex"  :base-params="baseParamsAnnex"
+                                    :data-url="dataUrlAnnex" :table-columns="tableColumnsAnnex" :request-type="'POST'" >
+                        </el-table-x>
+                    </el-collapse-item>
+
+         </el-collapse>
+
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-checkmark" @click="saveFn" >保存</el-button>
+            <el-button type="primary" icon="yx-checkmark" @click="submitFn" >提交</el-button>
+            <el-button type="primary" icon="yx-undo2" @click="returnFn" >返回</el-button>
+        </div>
+
+    </el-dialog-x>
+
+
+    <el-dialog-x title="附件" :visible.sync="dialogVisibleAnnex" size="large">
+        <el-form-x ref="annexForm" :group-fields="annexInfoFields" :disabled="annexFormDisabled"
+                   label-width="130px" style="padding: 12px 12px 24px 12px">
+        </el-form-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="saveAnnexFn" icon="check" v-if="flag != 'VIEWINFO'">保存</el-button>
+            <el-button type="primary" @click="cancleAnnesFn" icon="yx-undo2" v-if="flag != 'VIEWINFO'">取消</el-button>
+            <el-button type="primary" @click="cancleAnnesFn" icon="check" v-if="flag == 'VIEWINFO'">返回</el-button>
+
+            <!--<el-button type="primary" @click="getHistoryCredit" icon="check">返回</el-button>-->
+        </div>
+    </el-dialog-x>
+
+</div>
+

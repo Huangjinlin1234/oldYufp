@@ -1,0 +1,32 @@
+﻿<!--
+        @create by 
+        @update by 
+        @description 
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons" ref="form"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')" >查看</el-button>
+            <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')" >导出</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :base-params="baseParams"
+                :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+    <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+       width="650px" height="380px" -->
+    <el-dialog-x title="" :visible.sync="dialogVisible" size="full">
+        <el-table-x ref="histable" :row-index="true" :data-url="hisUrl" :table-columns="hisColumns"
+                    :request-type="'POST'"></el-table-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" @click="buttonReturn" icon="">返回</el-button>
+        </div>
+    </el-dialog-x>
+
+    <el-dialog-x title="提示" :visible.sync="exportDialogVisible" width="350px" height="80px">
+        <div>
+            <div style="margin: 5px;">是否导出文件：{{ exportFileName + '.xlsx'}}</div>
+            <div id="exportSpan" style="margin: 10px; text-align: right"></div>
+        </div>
+    </el-dialog-x>
+</div>

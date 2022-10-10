@@ -1,0 +1,49 @@
+<!--
+    @create by szbd
+    @description 授信额度查询的前端页面
+    @createDate 2018-10-07 11:10:16
+-->
+<div>
+  <el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <!-- <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+      <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button>
+      <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button> -->
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')" >查看</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应 width="650px" height="380px" -->
+  <el-dialog-x :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="full">
+    <el-tabs v-model="baseTab" ref="lpcRef">
+      <el-tab-pane label="授信协议信息" name="baseTab" >
+        <div style="padding-top: 10px"></div>
+        <el-form-x ref="reform" :group-fields="updateFields" :disabled="formDisabled" label-width="80px"></el-form-x>
+      </el-tab-pane>
+
+      <el-tab-pane label="客户信息">
+        <el-collapse ref='basecollapse' v-model="expandCollapseName">
+          <el-collapse-item title="身份信息" name="identityInfo">
+            <el-form-x ref="identityInfo" :group-fields=" identityInfoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+          </el-collapse-item>
+
+          <el-collapse-item title="背景信息" name="backgroundInfo">
+            <el-form-x ref="backgroundInfo" :group-fields="backgroundInfoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+          </el-collapse-item>
+
+          <el-collapse-item title="婚姻信息" name="indivMarInFo">
+            <el-form-x ref="indivMarInFo" :group-fields="indivMarInFoFields" :disabled="formDisabled" label-width="130px" :closable="true"></el-form-x>
+          </el-collapse-item>
+        </el-collapse>
+      </el-tab-pane>
+    </el-tabs>
+
+    <el-form-x :buttons="rebackButtons"></el-form-x>
+
+  </el-dialog-x>
+
+</div>

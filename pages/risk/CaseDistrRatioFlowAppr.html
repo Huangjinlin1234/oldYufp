@@ -1,0 +1,26 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+  <!--<el-table-x ref="reftable" :row-index="true" :default-load="false" data-params="baseParam"-->
+              <!--:data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>-->
+
+  <el-collapse ref='basecollapse' v-model="expandCollapseName">
+    <el-collapse-item title="委外机构信息" name="tableOuts">
+      <el-table-x ref="reftableOuts" :row-index="true" :base-params="baseParamsOuts" :default-load="false"
+                  :data-url="dataUrlOuts" :table-columns="tableColumnsOuts" :request-type="'POST'"></el-table-x>
+    </el-collapse-item>
+
+    <el-collapse-item title="律师事务所信息" name="tableLaw">
+      <el-table-x ref="reftableLaw" :row-index="true" :base-params="baseParamsLaw" :default-load="false"
+                  :data-url="dataUrlLaw" :table-columns="tableColumnsLaw" :request-type="'POST'"></el-table-x>
+    </el-collapse-item>
+
+    <el-collapse-item title="风险代理机构信息" name="tableRisk">
+      <el-table-x ref="reftableRisk" :row-index="true" :base-params="baseParamsRisk"
+                  :data-url="dataUrlRisk" :table-columns="tableColumnsRisk" :request-type="'POST'"></el-table-x>
+    </el-collapse-item>
+  </el-collapse>
+</div>

@@ -1,0 +1,113 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="plus" @click="taskGet" v-if="checkPermission('taskGet')">任务认领</el-button>
+            <el-button icon="edit" @click="taskReg" v-if="checkPermission('taskReg')">任务登记</el-button>
+            <el-button icon="edit" @click="taskflowFn" v-if="checkPermission('taskflow')">人工流转</el-button>
+            <el-button icon="edit" @click="smsInfoFn" v-if="checkPermission('smsInfo')">短信通知</el-button>
+            <el-button icon="document" @click="historyInfo" v-if="checkPermission('historyInfo')">历史催收记录查看</el-button>
+            <el-button icon="yx-undo2" @click="withdrawFn" v-if="checkPermission('withdraw')">撤回</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :base-params="baseParams"
+                :data-url="taskInfoDataUrl" :table-columns="tableColumns" :request-type="'POST'">
+    </el-table-x>
+
+    <el-dialog-x title="任务认领" :visible.sync="taskGetdialogVisible" size="full">
+        <el-form-q :field-data="queryFields" :buttons="queryButtons2" ref="queryFm"></el-form-q>
+        <div class="yu-toolBar">
+            <el-button-group>
+                <el-button @click="getTask" style="border-radius: 5px">认领</el-button>
+            </el-button-group>
+        </div>
+        <el-table-x ref="reftable2" :row-index="true" :checkbox="true" :base-params="baseParamsCla"
+                    :data-url="taskInfoDataUrl2" :table-columns="tableColumns" :request-type="'POST'">
+        </el-table-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-undo2" @click="returnFn">返回</el-button>
+        </div>
+    </el-dialog-x>
+
+    <el-dialog-x title="" :visible.sync="dialogVisible" size="full">
+        <el-tabs type="border-card" v-model="baseTab">
+            <el-tab-pane label="电话催收" name="baseTab">
+
+                <el-collapse v-model="expandCollapseName" ref='basecollapse'>
+
+                    <el-collapse-item title="客户基本信息" name="cusInfo">
+                        <el-form-x ref="cusInfoRef" :group-fields="cusInfoFields" label-width="125px"
+                                   :disabled="formDisabled"></el-form-x>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="催收借据列表" name="accLoan">
+                        <el-form-x ref="accLoanRef" :group-fields="accLoanInfoFields" label-width="125px"
+                                   :disabled="formDisabled"></el-form-x>
+                        <div class="yu-grpButton">
+                            <el-button type="primary" icon="document" @click="accLoanInfoFn">查看</el-button>
+                            <el-button type="primary" icon="yx-undo2" @click="accLoanReturnFn" >收起</el-button>
+                        </div>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="历史催收记录" name="colltHistory">
+                        <el-table-x ref="colltHistoryTable" :row-index="false"
+                                    :data-url="taskRcdDataUrl" :table-columns="colltRcdTableColumns"
+                                    :request-type="'POST'"></el-table-x>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="历史人工流转记录" name="taskFlowHistory">
+                        <el-table-x ref="taskFlowRcdTable" :row-index="false"
+                                    :data-url="taskFlowRcdDataUrl" :table-columns="taskFlowRcdTableColumns"
+                                    :request-type="'POST'" ></el-table-x>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="电话催收登记信息" name="colltRegisterInfo">
+                        <el-form-x ref="colltRegisterInfoRef" :group-fields="colltRegisterInfoFields"
+                                   label-width="125px" :disabled="formDisabled"></el-form-x>
+                        <div class="yu-grpButton">
+                            <el-button type="primary" icon="yx-checkmark" @click="saveRegisterInfoFn">保存</el-button>
+                            <el-button type="primary" icon="yx-undo2" @click="cancleFn">取消</el-button>
+                        </div>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="流转信息" name="taskFlow">
+                        <el-form-x ref="taskFlowRef" :group-fields="taskFlowFields" label-width="125px"
+                                   :disabled="formDisabled"></el-form-x>
+                        <div class="yu-grpButton">
+                            <el-button type="primary" icon="yx-checkmark" @click="commitFlowInfoFn">提交</el-button>
+                            <el-button type="primary" icon="yx-undo2" @click="cancleFn">取消</el-button>
+                        </div>
+                    </el-collapse-item>
+
+
+                </el-collapse>
+
+            </el-tab-pane>
+
+        </el-tabs>
+    </el-dialog-x>
+
+    <el-dialog-x title="短信通知" :visible.sync="messageDialogVisible" size="large">
+        <el-form-x ref="smsInfoRef" :group-fields="smsNoticeAppFields" label-width="125px"
+                   :disabled="formDisabled"></el-form-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-checkmark" @click="sureFn">提交</el-button>
+            <el-button type="primary" icon="yx-undo2" @click="returnFn2">取消</el-button>
+        </div>
+    </el-dialog-x>
+
+    <el-dialog-x title="历史催收记录查看" :visible.sync="historyDialogVisible" size="full">
+        <el-table-x ref="colltHistoryTable2" :row-index="false"
+                    :data-url="taskRcdDataUrl" :table-columns="colltRcdTableColumns"
+                    :request-type="'POST'"></el-table-x>
+        <div class="yu-grpButton">
+            <el-button type="primary" icon="yx-undo2" @click="returnFn1">返回</el-button>
+        </div>
+    </el-dialog-x>
+
+</div>

@@ -1,0 +1,82 @@
+<!--
+  @created by wangyin 2018-01-04
+  @updated by
+  @description 系统主页面-左侧竖向菜单模式
+-->
+<div id="frame" class="yu-idxBody /*page-sidebar-closed*/">
+    <div class="navbar">
+        <div class="yu-top-logo"></div>
+        <div class="nav-right">
+            <div class="yu-userInfo">
+                <!-- <a id="yu-exit" class="yu-exit" href="javascript:void(0);" title="注销"><i class="el-icon-yx-switch"></i></a>
+                <div><img id="userPic" src="themes/default/images/userPic.png" /></div>
+                <p><b id="userName"><i class="el-icon-yx-user"></i></b><span id="userRole"></span></p>
+                    <img src="themes/default/images/userPic.png" alt="">
+             -->
+             <div class="yu-framer-user">
+                 <img src="themes/default/images/runningTime.png" alt="">
+                 <span>营业日期：2022-09-24</span>
+             </div>
+             <div id="more" class="yu-framer-role">
+                <img src="themes/default/images/userPic.png" alt="">
+                <div class="yu-framer-role-user">
+                    <b class="userrolename">系统管理员&nbsp;admin</b>
+                    <div>系统管理员角色</div>
+                </div>
+                <div class="yu-framer-popover">
+                    dd 
+                 </div>
+             </div>
+             <div class="arrow-hover" ><i class="el-icon-arrow-down" style="cursor: pointer"></i></div>
+             
+             <div class="yu-framer-tool">
+                 <i class="el-icon-share"></i>
+                 <i class="el-icon-delete"></i>
+                 <i id="yu-more" class="el-icon-star-off"></i>
+                 <i id="yu-exit"  class="el-icon-close" style="cursor: pointer"></i>
+             </div>
+            </div>
+            <!-- <div id="yu-sysTools" class="yu-sysTools"></div> -->
+            <!-- <div>
+                <div>
+                    <img src="themes/default/images/userPic.png" alt="">
+                </div>
+            </div> -->
+        </div>
+    </div>
+        <!--system menu，swiper、treeMenu sta-->
+        <div class="page-sidebar yu-idxMenu">
+            <div class="swiper-container yu-idxMenuSwiper">
+                <div class="swiper-wrapper">
+                    <div class="menuSearch-box">
+                        <i class="el-icon-search"></i>
+                        <input class="input" v-model="input" placeholder="搜索快捷菜单..."  ></input>
+                        <i class="el-icon-yx-menu" ></i>
+                    </div>
+                    <div class="swiper-slide">
+                        <ul class="page-sidebar-menu" id="_my_menu"></ul>
+                        <!--menu info end-->
+                    </div>
+                </div>
+                <div class="swiper-scrollbar yu-idxMenuScrollbar"></div>
+            </div>
+        </div>
+        <!--system menu，swiper、treeMenu end-->
+
+        <!--mainBox sta-->
+        <div class="yu-mainBox">
+            <!-- idxTab sta -->
+            <div class="yu-idxTab">
+                <div class="yu-idxTabs" id="yu-idxTabs">
+                    <div>
+                        <!--<a class="ck" href="javascript:void(0);" title="首页" data-key='0' onclick="yufp.frame.focusTab(0)" oncontextmenu="yufp.frame.tabContextmenu(0)">首页</a>-->
+                    </div>
+                </div>
+                <div class="yu-idxTabBox" id="yu-idxTabBox">
+                    <!--<div class="ck" data-key='0' id="_root_first"></div>-->
+                </div>
+            </div>
+            <!-- idxTab end -->
+        </div>
+    <!--mainBox end-->
+</div>

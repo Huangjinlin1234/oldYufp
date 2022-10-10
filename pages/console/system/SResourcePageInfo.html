@@ -1,0 +1,59 @@
+﻿<!--
+  @create by 
+  @update by 
+  @description 资源信息管理
+-->
+<div>
+  <el-row>
+      <el-col :span="10">
+             <el-button-group >
+               <el-button icon="plus" @click="addFn"  v-if="checkPermission('create')">新增</el-button>
+               <el-button :icon="expandAll ? 'yx-menu4' : 'yx-menu3' "  @click="transExpand" >{{ expandAll ? '收缩所有节点' : '展开所有节点' }} </el-button>
+             </el-button-group>
+             <el-tree
+             :style="autoStyle"
+			        class="filter-tree"
+			        v-loading="resc.loading"
+			        :data="resc.roles"
+			        :props="resc.props"
+			        :default-expand-all="true"
+			        :highlight-current="true"
+			        :expand-on-click-node="true"
+			        :render-content="renderContent"
+			        @node-click="nodeClickFn"
+			        ref="rescTree">
+			      </el-tree>
+      </el-col>
+      <el-col :span="14">
+            <!-- 展示资源查看 -->
+            <el-form-x ref="resourceform" :group-fields="resourceform.fields" :disabled="resourceform.disabled" 
+              :buttons="resourceform.buttons"  label-width="120px"  v-loading="resourceform.loading"></el-form-x>
+            <div class="yu-toolBar">
+              <el-button-group >
+                <el-button icon="plus" @click="addActFn">新增</el-button>
+                <el-button icon="edit" @click="modifyActFn">修改</el-button>
+                <el-button icon="delete" @click="deleteActFn" >删除</el-button>
+                <el-button icon="yx-zoom-in" @click="infoActFn">查看</el-button>
+            </div>
+
+            <el-table-x ref="rescActTable" :data-url="actDataUrl" :table-columns="rescActColumns" :default-load="false" :pageable="false"
+            request-type="POST" ></el-table-x>
+        </el-col>
+  </el-row>
+
+    <!-- 新增资源对话框 v-loading="addRescform.loading"  -->
+    <el-dialog title="新增资源" :visible.sync="addDialog.visible" >
+         <el-form-x ref="addRescform" :group-fields="addRescform.fields"
+         v-loading="addRescform.loading"
+          :buttons="addRescform.buttons" label-width="125px" ></el-form-x>
+    </el-dialog>
+    <!-- 资源操作对话框 -->
+    <el-dialog :title="rescActDialog.title"
+      :visible.sync="rescActDialog.visible" size="large">
+      <el-form-x v-loading="rescActDialog.loading" ref="rescActForm"  
+        :group-fields="rescActForm.fields"
+        :element-loading-text="rescActLodingText"
+        :buttons="rescActForm.buttons" label-width="140px"
+        :disabled="rescActForm.disabled" ></el-form-x>
+    </el-dialog>
+</div>

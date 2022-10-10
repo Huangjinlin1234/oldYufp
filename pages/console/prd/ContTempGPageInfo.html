@@ -1,0 +1,60 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 
+-->
+<div>
+	<el-form-q :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+      <el-button icon="yx-bin" @click="deleteFn" v-if="checkPermission('delete')">删除</el-button>
+      <el-button icon="yx-undo2" @click="disableFn" >失效</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+     width="650px" height="380px" -->
+  <el-dialog :title="viewTitle[viewType]" :visible.sync="dialogVisible" size="large" >
+          <div v-loading="updateLoading" element-loading-text="拼命加载中">
+						  <el-form-x ref="reform"
+						            v-loading="updateLoading"  element-loading-text="拼命加载中"
+						           :group-fields="updateFields"
+						           :disabled="formDisabled" label-width="125px"></el-form-x>
+           
+	           <el-collapse v-show="viewType != 'ADD'" v-model="expandCollapseName">
+				        <el-collapse-item title="关联合同模版信息" name="base">
+					             <el-button-group v-show="contTempGBtnsVisible">
+									      <el-button icon="plus" @click="addLinkFn">新增</el-button>
+									      <el-button icon="yx-bin" @click="deleteLinkFn">删除</el-button>
+									    </el-button-group>
+								      <el-table-x ref="linkedtable" :row-index="true" :radiobox="false"
+								         :default-load="false" request-type="POST"
+	                      :data-url="linkedDataUrl" :table-columns="contTempInfo.tableColumns"></el-table-x>
+				        </el-collapse-item>
+				    </el-collapse>
+				     <div style="text-align: center;">
+                <el-button type="primary" icon="check" @click="saveClassfyCfgFn" v-show="viewType != 'DETAIL'">保存</el-button>
+                <el-button type="primary" icon="check" @click="submitClassfyCfgFn" v-show="viewType == 'EDIT'">提交</el-button>
+                <el-button type="primary" icon="yx-undo2" @click="cancelFn">返回</el-button>
+          </div>
+           </div>
+  </el-dialog>
+  <!-- 选择当前合同模版组还未关联,并生效的合同模版  -->
+  <el-dialog title="新增关联合同模版" :visible.sync="addLinkVisible" size="large">
+           <el-form-q ref="linkquetab" :field-data="contTempInfo.queryFields" :buttons="contTempInfo.queryButtons"></el-form-q>
+              <el-table-x ref="linktable" 
+                v-loading="contTempInfo.updateLoading"  element-loading-text="拼命加载中"
+                :data-url="contTempInfo.dataUrl" :checkbox="true"
+                :table-columns="contTempInfo.tableColumns" request-type="POST" :default-load="false">
+              </el-table-x>
+              <div slot="footer" class="dialog-footer">
+                <el-button icon="yx-pencil" type="primary" @click="selectFn">选取返回</el-button>
+                <el-button @click="addLinkVisible = false">取 消</el-button>
+              </div>
+  </el-dialog>
+  
+</div>

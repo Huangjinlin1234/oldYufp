@@ -1,0 +1,106 @@
+<!--
+  @create by 
+  @update by 
+  @description 
+-->
+<div>
+  <el-form-q :field-data="queryFields" :buttons="queryButtons" ref="queryForm"></el-form-q>
+
+  <div class="yu-toolBar">
+    <el-button-group>
+      <!-- <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button> -->
+       <el-button icon="edit" @click="modifyFn"  v-if="checkPermission('edit')">修改</el-button>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+      <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button>
+    </el-button-group>
+  </div>
+  <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams" :data-url="dataUrl" :table-columns="tableColumns"
+    :request-type="'POST'"></el-table-x>
+
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应
+   :title="viewTitle[viewType]"   -->
+  <el-dialog-x :visible.sync="dialogVisible" size="full" label-width="60px">
+
+    <el-tabs v-model="baseTab" ref="cmisref">
+      <el-tab-pane label="客户基本信息" name="baseTab">
+        <el-collapse ref='basecollapse' v-model="expandCollapseName">
+          <!-- <el-form-x  ref="identityInfo" :group-fields="identityInfoFields" :disabled="formDisabled"  label-width="130px" ></el-form-x> -->
+          <el-collapse-item title="身份信息" name="identityInfo">
+            <el-form-x ref="identityInfo" :group-fields=" identityInfoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+          </el-collapse-item>
+
+          <el-collapse-item title="背景信息" name="backgroundInfo">
+            <el-form-x ref="backgroundInfo" :group-fields="backgroundInfoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+          </el-collapse-item>
+
+          <el-collapse-item title="婚姻信息" name="indivMarInFo">
+            <el-form-x ref="indivMarInFo" :group-fields="indivMarInFoFields" :disabled="formDisabled" label-width="130px" :closable="true"></el-form-x>
+          </el-collapse-item>
+
+        </el-collapse>
+      </el-tab-pane>
+
+      <!-- <el-tab-pane label="联系信息" name="contInFo">
+            <el-form-x  ref="contInFo" :group-fields="contInFoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+         </el-tab-pane> -->
+
+      <!--          <el-tab-pane label="授信申请信息" name="creditApplReftable"> -->
+      <!--             <el-form-x  ref="creditApplReftable" :group-fields="creditApplReftableFields" :disabled="formDisabled" label-width="130px"></el-form-x> -->
+      <!--          </el-tab-pane> -->
+
+      <el-tab-pane label="授信申请信息" v-if="isEditOp">
+        <div style="padding-top: 10px"></div>
+<!--         <div class="yu-toolBar"> -->
+<!--           <el-button-group> -->
+<!--             <el-button icon="document" @click="tmpInfoFn('creditApplReftable')">查看</el-button> -->
+<!--           </el-button-group> -->
+<!--         </div> -->
+        <el-table-x ref="creditApplReftable" :row-index="true" :radiobox="false" :base-params="baseParamsNlsCredit" :default-load="false"
+          :data-url="dataUrlNlsCredit" :table-columns="creditApplReftableColumns" :request-type="'POST'"></el-table-x>
+      </el-tab-pane>
+      
+<!--       <el-dialog-x title="授信申请" :visible.sync="creditDialogVisible" size="full"> -->
+<!--         <el-form-x ref="creditForm" :buttons="creditButtons" :group-fields="creditFields" :disabled="creditDisabled" label-width="80px"></el-form-x> -->
+<!-- 			<el-collapse v-model="expandCollapseName" ref='basecollapse2'> -->
+<!-- 				<el-collapse-item title="授信信息详情" name="creditInfo"> -->
+<!-- 					<el-form-x ref="creditForm" :group-fields="creditFields" :disabled="creditDisabled" label-width="80px"> -->
+<!-- 				</el-collapse-item> -->
+<!-- 				<el-collapse-item title="百度特色字段" name="baiduItem"> -->
+<!-- 					<el-form-x ref="baiduForm" :group-fields="baiduFields" :disabled="formDisabled" label-width="80px"></el-form-x> -->
+<!-- 				</el-collapse-item> -->
+<!-- 			</el-collapse> -->
+<!-- 		<el-form-x :buttons="creditButtons"></el-form-x> -->
+<!--       </el-dialog-x> -->
+
+      <el-tab-pane label="用信申请信息" name="loanApplInFo" v-if="isEditOp">
+        <el-table-x ref="loanApplReftable" :row-index="true" :radiobox="false" :base-params="baseParamsNlsApp" :data-url="dataUrlNlsApp"
+          :table-columns="tableColumnsLoanAppl" :default-load="false" :request-type="'POST'">
+        </el-table-x>
+      </el-tab-pane>
+
+      <el-tab-pane label="借据信息" name="loanCtrInFo" v-if="isEditOp">
+        <el-table-x ref="loanCtrReftable" :row-index="true" :radiobox="false" :default-load="false" :base-params="baseParamsLoan"
+          :data-url="dataUrlLoan" :table-columns="tableColumnsLoanCtr" :request-type="'POST'">
+        </el-table-x>
+      </el-tab-pane>
+
+      <el-tab-pane label="影像资料" name="imageCtrInFo" v-if="isEditOp">
+        <el-table-x ref="imageCtrReftable" :row-index="true" :radiobox="false" :default-load="false" :base-params="baseParamImages"
+                    :data-url="dataUrlImages" :table-columns="tableColumnsImages" :request-type="'POST'" @custom-row-click="batchSernoClick" >
+        </el-table-x>
+      </el-tab-pane>
+
+      <!-- <el-tab-pane label="还款计划" name="repayPlanInFo">
+            <el-form-x  ref="repayPlanInFo" :group-fields="repayPlanInFoFields" :disabled="formDisabled" label-width="130px"></el-form-x>
+         </el-tab-pane> -->
+
+      <!--  <el-tab-pane  label="征信" name="third"  >
+                 <el-table-x ref="thirdReftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+                       :data-url=dataUrlZX :table-columns="tableColumnsZX"  :request-type="'POST'" ></el-table-x>
+                 <el-button type="primary" @click="getCredit" icon="check">查看征信报告</el-button>   
+                  <mt-button plain type ="danger" size="large"  @click="getCredit">查看征信报告</mt-button>
+          </el-tab-pane> -->
+    </el-tabs>
+    <el-form-x :buttons="updateButtons"></el-form-x>
+  </el-dialog-x>
+</div>

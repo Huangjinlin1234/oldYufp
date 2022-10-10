@@ -1,0 +1,17 @@
+<!--
+  @create by wanglh4
+  @update by 
+  @description 征信明细查询
+-->
+<div>
+    <el-form-q :field-data="queryFields" :buttons="queryButtons" ref="form"></el-form-q>
+    <div class="yu-toolBar">
+        <el-button-group>
+            <el-button icon="el-icon-yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button>
+            <el-button @click="getCredit" icon="check" v-if="checkPermission('detail')">查看征信报告</el-button>
+        </el-button-group>
+    </div>
+    <el-table-x ref="reftable" :row-index="true" :radiobox="false" :base-params="baseParams"
+                :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'">
+    </el-table-x>
+</div>

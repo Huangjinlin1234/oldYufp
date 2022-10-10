@@ -1,0 +1,23 @@
+﻿<div>
+  <el-form-x ref="taskNoform"
+           :group-fields="taskNoFields"
+           :disabled="formDisabled" ></el-form-x>
+<!--     <div class="yu-toolBar1">
+    <el-button-group>
+      <el-button icon="document" @click="infoBill" >查看</el-button>
+    </el-button-group>
+  </div> -->
+     <el-table-x ref="removebilltable" :row-index="true" :radiobox="true" 
+        :data-url="removebillUrl" :table-columns="removebillColumns" :request-type="'POST'"></el-table-x>
+     <el-dialog-x  :title="viewTitle[viewType]" :visible.sync="billVisible" size="full">
+          <el-table-x ref="billtable" 
+        :data-url="billUrl" :table-columns="billColumns" :request-type="'POST'"></el-table-x>     
+        <el-form-x ref="form"
+           :group-fields="updateFields"
+           :disabled="formDisabled" label-width="100px"></el-form-x>
+           <div class="yu-grpButton" >
+             <el-button type="primary" @click="buttonReturn" icon="">关闭</el-button>  
+        </div>
+                            
+      </el-dialog-x >
+</div>

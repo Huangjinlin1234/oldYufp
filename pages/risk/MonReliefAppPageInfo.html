@@ -1,0 +1,115 @@
+﻿<!--
+	@create by 
+	@update by 
+	@description 息费减免申请
+-->
+<div>
+	<el-form-q ref="queryForm" :field-data="queryFields" :buttons="queryButtons"></el-form-q>
+
+  <div class="yu-toolBar">
+    <el-button-group>
+      <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">费用减免</el-button>
+      <el-button icon="edit" @click="modifyFn" v-if="checkPermission('edit')">修改</el-button>
+      <el-button icon="document" @click="infoFn" v-if="checkPermission('detail')">查看</el-button>
+      <el-button icon="yx-file-excel" @click="exportFn" v-if="checkPermission('export')">导出</el-button>
+      <el-button icon="document" @click="reliefInfoFn('reliefDetail')" v-if="checkPermission('reliefDetail')">息费减免明细</el-button>
+    </el-button-group>
+  </div>
+
+  <el-table-x ref="reftable" :row-index="true" :base-params="baseParams"
+        :data-url="dataUrl" :table-columns="tableColumns" :request-type="'POST'"></el-table-x>
+
+  <!-- 逾期借据选择  -->
+  <el-dialog-x title="逾期借据选择" :visible.sync="dialogVisibleLoan" size="full">
+    <el-form-q :field-data="queryFieldsLoan" :buttons="queryButtonsLoan"></el-form-q>
+
+    <el-table-x ref="reftableLoan" :row-index="true" :base-params="baseParamsLoan" :default-load="false"
+                :data-url="dataUrlLoan" :table-columns="tableColumnsLoan" :request-type="'POST'"></el-table-x>
+    <div class="yu-grpButton">
+      <el-button type="primary" @click="confirmFn" icon="check">确认</el-button>
+      <el-button type="primary" @click="cancelFn" icon="yx-undo2">取消</el-button>
+    </div>
+  </el-dialog-x>
+
+  <!-- 说明dialog可配置宽高属性，若不配置则宽度默认为屏幕50%，高度自适应width="650px" height="380px" -->
+  <el-dialog-x title="息费减免申请信息" :visible.sync="dialogVisible" size="full">
+    <el-tabs type="border-card">
+      <el-card style="width: 100%;" shadow="always" header="客户基本信息" v-show="checkIsShowCus" :body-style="{ padding: '0px' }">
+        <el-form-x ref="cusBaseInfo" :group-fields="cusBaseInfoFields" :disabled="formDisabled"
+                   label-width="130px" style="padding: 12px 12px 0px 12px">
+        </el-form-x>
+      </el-card>
+
+      <div style="height: 12px"></div>
+      <el-card style="width: 100%;" shadow="always" header="催收借据信息" v-show="checkIsShowAccLoan" :body-style="{ padding: '0px' }">
+        <el-form-x ref="accLoanInfo" :group-fields="accLoanInfoFields" :disabled="formDisabled"
+                   label-width="130px" style="padding: 12px 12px 24px 12px">
+        </el-form-x>
+      </el-card>
+
+      <div style="height: 12px"></div>
+      <el-card style="width: 100%;" shadow="always" header="还款明细信息" v-show="checkIsShowRepayDetail" :body-style="{ padding: '0px' }">
+        <el-table-x ref="reftableRepayDetail" :radiobox="false" :base-params="baseParamsRepayDetail" :default-load="false"
+                    :data-url="dataUrlRepayDetail" :table-columns="tableColumnsRepayDetail" :request-type="'POST'" >
+        </el-table-x>
+      </el-card>
+
+      <div style="height: 12px"></div>
+      <el-card style="width: 100%;" shadow="always" header="还款计划信息" v-show="checkIsShowRepayPlan" :body-style="{ padding: '0px' }">
+        <el-table-x ref="reftableRepayPlan" :radiobox="false" :base-params="baseParamsRepayPlan" :default-load="false"
+                    :data-url="dataUrlRepayPlan" :table-columns="tableColumnsRepayPlan" :request-type="'POST'" >
+        </el-table-x>
+      </el-card>
+
+      <div style="height: 12px"></div>
+      <el-card style="width: 100%;" shadow="always" header="附件上传" v-show="checkIsShowUpload" :body-style="{ padding: '10px' }">
+        <!--<div style="height: 12px"></div>
+        <el-button type="primary" @click="uploadAnnexFile" icon="upload">上传</el-button>-->
+        <div class="yu-toolBar">
+          <el-button-group>
+            <el-button icon="plus" @click="uploadAnnexFn">上传</el-button>
+            <el-button icon="document" @click="modifyAnnexFn">修改</el-button>
+            <el-button icon="document" @click="infoAnnexFn">查看</el-button>
+            <el-button icon="document" @click="deleteAnnexFn">删除</el-button>
+          </el-button-group>
+        </div>
+        <el-table-x ref="reftableAnnex" :radiobox="false" :base-params="baseParamsAnnex" :default-load="false"
+                    :data-url="dataUrlAnnex" :table-columns="tableColumnsAnnex" :request-type="'POST'" >
+        </el-table-x>
+      </el-card>
+
+      <div style="height: 12px"></div>
+      <el-card style="width: 100%;" shadow="always" header="审批信息" v-show="checkIsShowAppr" :body-style="{ padding: '0px' }">
+        <el-form-x ref="apprInfo" :group-fields="apprInfoFields" :disabled="formDisabled"
+                   label-width="130px" style="padding: 12px 12px 24px 12px">
+        </el-form-x>
+      </el-card>
+
+      <div style="height: 12px"></div>
+      <el-card style="width: 100%;" shadow="always" header="减免信息" v-show="checkIsShowRelief" :body-style="{ padding: '0px' }">
+        <el-form-x ref="reliefInfo" :group-fields="reliefInfoFields" :disabled="formDisabled" :buttons="updateButtons"
+                   label-width="130px" style="padding: 12px 12px 24px 12px" v-loading.fullscreen.lock="fullscreenLoading"
+                   element-loading-text="息费减免申请发起处理中...">
+        </el-form-x>
+      </el-card>
+
+    </el-tabs>
+  </el-dialog-x>
+  <el-dialog-x title="附件" :visible.sync="dialogVisibleAnnex" size="large">
+    <el-form-x ref="annexForm" :group-fields="annexInfoFields" :disabled="annexFormDisabled"
+               label-width="130px" style="padding: 12px 12px 24px 12px">
+    </el-form-x>
+    <div class="yu-grpButton">
+      <el-button type="primary" @click="saveAnnexFn" icon="check" v-if="flag != 'VIEWINFO'">保存</el-button>
+      <el-button type="primary" @click="cancleAnnesFn" icon="yx-undo2">取消</el-button>
+      <!--<el-button type="primary" @click="getHistoryCredit" icon="check">返回</el-button>-->
+    </div>
+  </el-dialog-x>
+
+  <el-dialog-x title="息费减免明细" :visible.sync="dialogVisibleDetail" size="full">
+    <div>
+      <div id="monReliefDetailView"></div>
+    </div>
+    <el-form-x :buttons="rebackButtons"></el-form-x>
+  </el-dialog-x>
+</div>
