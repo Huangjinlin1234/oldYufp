@@ -21,14 +21,16 @@ function (require, exports) {
       upMenuId: '0',
       menuIcon: 'el-icon-yx-books',
       funcId: 'demo',
-      funcUrl: 'pages/demo/demo'},
+      funcUrl: 'pages/demo/demo'
+    },
     {
       menuId: 'lp-001',
       menuName: '首页',
       upMenuId: '0',
       menuIcon: 'el-icon-yx-home',
       funcId: 'dashboard',
-      funcUrl: 'pages/common/dashboard/dashboard' },
+      funcUrl: 'pages/common/dashboard/dashboard'
+    },
     {
       funcId: null,
       funcUrl: null,
@@ -56,7 +58,8 @@ function (require, exports) {
       menuIcon: 'el-icon-yx-quill',
       menuId: 'lp-0020',
       menuName: '产品限额管理',
-      upMenuId: 'lp-002'}
+      upMenuId: 'lp-002'
+    }
 
     // {
     //   funcId: null,
@@ -188,23 +191,26 @@ function (require, exports) {
       'funcId': null,
       'funcUrl': null,
       'legalOrgCode': null
-    }
+    },
+    { menuId: 'lp-92061', menuName: '资源定义', upMenuId: 'lp-92060', menuIcon: 'el-icon-yx-tree', funcId: 'resource', funcUrl: 'pages/console/system/SResourcePageInfo' },
+    { menuId: 'lp-92062', menuName: '资源权限', upMenuId: 'lp-92060', menuIcon: 'el-icon-yx-tree', funcId: 'rescRoleAct', funcUrl: 'pages/console/system/SRoleRescRulePageInfo' },
+    { menuId: 'lp-92063', menuName: '报表权限管理', upMenuId: 'lp-92060', menuIcon: 'el-icon-yx-tree', funcId: 'SPrdOrgPageInfo', funcUrl: 'pages/console/prd/SPrdOrgPageInfo' }
   ];
-  // var loanMenu = yufp.require.use('./mocks/data/loanMenu.js');
-  // var riskMenu = yufp.require.use('./mocks/data/riskMenu.js');
-  // var ctrMenu = yufp.require.use('./mocks/data/ctrMenu.js');
-  // var limitMenu = yufp.require.use('./mocks/data/limitMenu.js');
-  // var consoleMenu = yufp.require.use('./mocks/data/consoleMenu.js');
-  // var demoCtrls = yufp.require.use('./mocks/data/demoCtrls.js');
-  // var loanCtrls = yufp.require.use('./mocks/data/loanCtrls.js');
-  // var riskCtrls = yufp.require.use('./mocks/data/riskCtrls.js');
-  // var limitCtrls = yufp.require.use('./mocks/data/limitCtrls.js');
-  // var consoleCtrls = yufp.require.use('./mocks/data/consoleCtrls.js');
-  /**
-     * GET请求URL参数转换
-     * @param url
-     * @returns {{}}
-     */
+    // var loanMenu = yufp.require.use('./mocks/data/loanMenu.js');
+    // var riskMenu = yufp.require.use('./mocks/data/riskMenu.js');
+    // var ctrMenu = yufp.require.use('./mocks/data/ctrMenu.js');
+    // var limitMenu = yufp.require.use('./mocks/data/limitMenu.js');
+    // var consoleMenu = yufp.require.use('./mocks/data/consoleMenu.js');
+    // var demoCtrls = yufp.require.use('./mocks/data/demoCtrls.js');
+    // var loanCtrls = yufp.require.use('./mocks/data/loanCtrls.js');
+    // var riskCtrls = yufp.require.use('./mocks/data/riskCtrls.js');
+    // var limitCtrls = yufp.require.use('./mocks/data/limitCtrls.js');
+    // var consoleCtrls = yufp.require.use('./mocks/data/consoleCtrls.js');
+    /**
+       * GET请求URL参数转换
+       * @param url
+       * @returns {{}}
+       */
   var paramUrl2Obj = function (url) {
     var search = url.split('?')[1];
     if (!search) {
@@ -213,11 +219,11 @@ function (require, exports) {
     return JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"').replace(/\n/g, '\\n') + '"}');
   };
 
-  /**
-     * POST请求BODY参数转换
-     * @param body
-     * @returns {{}}
-     */
+    /**
+       * POST请求BODY参数转换
+       * @param body
+       * @returns {{}}
+       */
   var paramBody2Obj = function (body) {
     if (!body) {
       return {};
@@ -225,11 +231,11 @@ function (require, exports) {
     return JSON.parse('{"' + decodeURIComponent(body).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"').replace(/\n/g, '\\n') + '"}');
   };
 
-  /**
-     * oauth认证获取token
-     * @param config
-     * @returns {{code: string}}
-     */
+    /**
+       * oauth认证获取token
+       * @param config
+       * @returns {{code: string}}
+       */
   exports.loginFn = function (config) {
     var returnObj = {};
     try {
@@ -241,7 +247,7 @@ function (require, exports) {
       returnObj.code = '0';
       returnObj.data = 'Basicd2ViX2FwcDo=';
       returnObj.rows = '1234';
-    //   }
+      //   }
     } catch (e) {
       returnObj.code = '-1';
       returnObj.message = '系统错误，请联系系统管理员!';
@@ -250,9 +256,9 @@ function (require, exports) {
   };
 
   /**
-     * 注销模拟
-     * @param config
-     */
+       * 注销模拟
+       * @param config
+       */
   exports.logoutFn = function (config) {
     return {
       code: 0,
@@ -261,15 +267,16 @@ function (require, exports) {
   };
 
   /**
-     * 模拟会话信息
-     * @param config
-     * @returns
-     */
+       * 模拟会话信息
+       * @param config
+       * @returns
+       */
   exports.sessionInfoFn = function (config) {
     console.log(config, 'cccc');
 
     var data = paramUrl2Obj(config.url);
-    return {code: 0,
+    return {
+      code: 0,
       rows: {
         'userId': '40',
         'userName': 'YUFP',
@@ -288,65 +295,68 @@ function (require, exports) {
         'loginTime': null,
         'dataContr': [],
         'OPENDAY': '2018-05-14'
-      }};
+      }
+    };
   };
 
   /**
-     * 模拟菜单、控制点数据
-     * @returns {{menus, ctrls}}
-     */
+       * 模拟菜单、控制点数据
+       * @returns {{menus, ctrls}}
+       */
   exports.menuAndContrFn = function () {
     // var menus = demoMenus.concat(loanMenu).concat(riskMenu).concat(ctrMenu).concat(limitMenu).concat(consoleMenu);
     var menus = demoMenus;
     // var menuCtrls = demoCtrls.concat(loanCtrls).concat(riskCtrls).concat(limitCtrls).concat(consoleCtrls).concat(ctrMenu);
     var menuCtrls = [];
-    return {rows: {
-      menus: menus,
-      ctrls: menuCtrls
-    }};
+    return {
+      rows: {
+        menus: menus,
+        ctrls: menuCtrls
+      }
+    };
   };
 
   /**
-     * 数据权限数据
-     */
+       * 数据权限数据
+       */
   exports.dataContrFn = function () {
     return demoDataContr;
   };
 
   /**
-     * 密码加密
-     */
+       * 密码加密
+       */
   exports.passwordFn = function () {
 
   };
 
   /**
-     * 查询全部控制点信息
-     */
+       * 查询全部控制点信息
+       */
   exports.contrUrlFn = function () {
     return {};
   };
 
   /**
-     * 模拟后台数据字典库
-     * @type
-     * @private
-     */
+       * 模拟后台数据字典库
+       * @type
+       * @private
+       */
   var _all_lookup = {
     USER_STATUS: [
-      {key: '01', value: '正常'},
-      {key: '02', value: '冻结'},
-      {key: '03', value: '销户'}
+      { key: '01', value: '正常' },
+      { key: '02', value: '冻结' },
+      { key: '03', value: '销户' }
     ],
     CUST_TYPE: [
-      {key: '1', value: '零售'},
-      {key: '2', value: '公司'}
+      { key: '1', value: '零售' },
+      { key: '2', value: '公司' }
     ],
     IDENT_TYPE: [
-      {key: '1', value: '居民身份证'},
-      {key: '2', value: '居民户口薄'},
-      {key: '3', value: '组织机构代码'},
-      {key: '4', value: '营业执照代码'}
+      { key: '1', value: '居民身份证' },
+      { key: '2', value: '居民户口薄' },
+      { key: '3', value: '组织机构代码' },
+      { key: '4', value: '营业执照代码' }
     ],
     NATIONALITY: [
       { key: 'CN', value: '中国' },
@@ -375,7 +385,7 @@ function (require, exports) {
       { key: '4', value: '高中及以下' }
     ],
     biz_flow_type: [
-      { key: '01', value: '测试'}
+      { key: '01', value: '测试' }
     ]
 
   };
