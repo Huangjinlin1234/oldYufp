@@ -8,9 +8,9 @@
     <div class="user-title">
       <b>资源定义</b>
     </div>
-    <el-row :gutter="20">
-      <el-col :span="10">
-        <el-button-group>
+    <el-row>
+      <el-col :span="10" style="padding: 0 10px">
+        <el-button-group style="padding: 10px 0">
           <el-button icon="plus" @click="addFn" v-if="checkPermission('create')">新增</el-button>
           <el-button :icon="expandAll ? 'yx-menu4' : 'yx-menu3' " @click="transExpand">{{ expandAll ? '收缩所有节点' : '展开所有节点' }} </el-button>
         </el-button-group>
@@ -19,11 +19,11 @@
           ref="rescTree">
         </el-tree>
       </el-col>
-      <el-col :span="14">
+      <el-col :span="14" style="padding: 0 10px">
         <!-- 展示资源查看 -->
         <el-form-x ref="resourceform" :group-fields="resourceform.fields" :disabled="resourceform.disabled" :buttons="resourceform.buttons"
           label-width="120px" v-loading="resourceform.loading"></el-form-x>
-        <div class="yu-toolBar">
+        <div class="yu-toolBar" style="padding-top: 16px">
           <el-button-group>
             <el-button icon="plus" @click="addActFn">新增</el-button>
             <el-button icon="edit" @click="modifyActFn">修改</el-button>
