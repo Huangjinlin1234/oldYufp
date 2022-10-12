@@ -518,7 +518,7 @@ a:active {color: #666;}
 }
 .userCfg>.user-title{
     padding: 10px 24px;
-    border-bottom: 1px solid grey;
+    border-bottom: 1px solid rgb(237, 237, 237);
     font-size: 16px;
     display:flex;
     justify-content: space-between;
@@ -530,3 +530,4 @@ a:active {color: #666;}
 .userCfg>.user-table{
     padding: 24px
 }
+.el-button.el-button--primary{background-color: #2647a7 }

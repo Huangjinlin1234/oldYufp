@@ -15,24 +15,22 @@ define(function (require, exports) {
           baseParams: {
           },
           queryFields: [
-            { placeholder: '业务流水号', field: 'bizSerno', type: 'input' },
-            { placeholder: '合同编号', field: 'contNo', type: 'input' },
-            { placeholder: '客户名称', field: 'cusName', type: 'input' },
-            { placeholder: '客户号', field: 'cusId', type: 'input' },
-            { placeholder: '客户经理', field: 'cusManager', type: 'input' },
-            { placeholder: '审批状态', field: 'approveStatus', type: 'select', dataCode: 'STD_ZB_APPR_STATUS'}
+            { placeholder: '用户名称', field: 'bizSerno', type: 'input' },
+            { placeholder: '账号', field: 'contNo', type: 'input' },
+            {placeholder: '工号', field: 'cusName', type: 'input' },
+            {placeholder: '状态', field: 'cusId', type: 'input' },
+            { placeholder: '所属机构', field: 'cusManager', type: 'input' }
           ],
           queryButtons: [
             { label: '查询',
               op: 'submit',
               type: 'primary',
-              icon: 'search',
               click: function (model, valid) {
                 if (valid) {
                   _self.$refs.reftable.remoteData(model);
                 }
               } },
-            { label: '重置', op: 'reset', type: 'primary', icon: 'yx-loop2' }
+            { label: '重置', op: 'reset' }
           ],
           tableColumns: [
             { label: '用户代码', prop: 'userCode', sortable: true, resizable: true },
@@ -190,6 +188,7 @@ define(function (require, exports) {
           formDisabled: false,
           viewType: 'DETAIL',
           viewTitle: yufp.lookup.find('CRUD_TYPE', false)
+
         };
       },
       methods: {

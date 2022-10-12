@@ -15,7 +15,7 @@
 .el-select-dropdown__item { height: 28px; padding: 4px 10px; }
 .el-tabs__item { line-height: 32px; height: 32px; }
 .el-tabs__active-bar { height: 2px; }
-.el-form-item { margin-bottom: 0; }
+.el-form-item { margin-bottom: 0;}
 .el-form-item__error { left:inherit; right: 30px; top: 8px; }
 .el-input + .el-form-item__error, .el-radio-group + .el-form-item__error{ right: 10px; }
 .el-select .el-input + .el-form-item__error, .el-date-editor.el-input  + .el-form-item__error{ right: 30px; }

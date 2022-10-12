@@ -27,13 +27,12 @@ define(function (require, exports) {
             { label: '查询',
               op: 'submit',
               type: 'primary',
-              icon: 'search',
               click: function (model, valid) {
                 if (valid) {
                   _self.$refs.reftable.remoteData(model);
                 }
               } },
-            { label: '重置', op: 'reset', type: 'primary', icon: 'yx-loop2' }
+            { label: '重置', op: 'reset' }
           ],
           tableColumns: [
             { label: '机构代码', prop: 'userCode', sortable: true, resizable: true },
